@@ -12,11 +12,9 @@ code {
     monospace;
 }
 
-table, th, td {
-	border-collapse: collapse;
-	border: 1px solid black
-}
-
-th {
-	background-color: lightblue;
+.pending {
+  transition: color .3s;
+  transition-delay: .1s;
+  transition-timing-function: ease-in;
+  color: #aaa;
 }

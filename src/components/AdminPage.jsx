@@ -1,8 +1,13 @@
 import userService from "../services/users";
-import { createSignal, mergeProps } from "solid-js";
+import { createSignal, mergeProps, Suspense, useTransition } from "solid-js";
+import { Button, CircularProgress, Heading, HStack, Table, TableCaption, Tbody, Td, Th, Thead, Tr, VStack } from "@hope-ui/solid";
+
+import "../index.css";
 
 function AdminPage(props) {
 	const [users, setUsers] = createSignal([]);
+	const [pending, start] = useTransition();
+	const updateUsers = () => start(() => handleShowAllUsers());
 	const merged = mergeProps({ adminToken: "", handleLogout: null }, props);
 
 	const handleShowAllUsers = async () => {
@@ -12,41 +17,46 @@ function AdminPage(props) {
 			console.log("error retrieving all users");
 			return;
 		}
-		setUsers(allUsers);
+		setUsers(allUsers.sort((a, b) => a.id - b.id));
 	};
 
 	return (
-		<>
-			<h2>Admin</h2>
-			<div>
-				<button onClick={merged.handleLogout}>Log Out</button>
-			</div>
-			<button onClick={handleShowAllUsers}>Show all Users</button>
+		<VStack spacing="$3">
+			<Heading size="3xl">Admin Page</Heading>
+			<HStack spacing="$3">
+				<div>
+					<Button onClick={merged.handleLogout}>Log Out</Button>
+				</div>
+				<Button onClick={updateUsers}>Show all Users</Button>
+			</HStack>
 			<Show when={users().length !== 0}>
-				<table>
-					<thead>
-						<tr>
-							<th>Id</th>
-							<th>Username</th>
-							<th>Tin</th>
-							<th>Roles</th>
-						</tr>
-					</thead>
-					<tbody>
-						<For each={users()}>
-							{(user) =>
-								<tr>
-									<td>{user.id}</td>
-									<td>{user.username}</td>
-									<td>{user.tin}</td>
-									<td>{user.roles}</td>
-								</tr>
-							}
-						</For>
-					</tbody>
-				</table>
+				<Table striped="odd" highlightOnHover>
+					<TableCaption>Data of all users in the system</TableCaption>
+					<Thead>
+						<Tr>
+							<Th fontSize="$l">Id</Th>
+							<Th fontSize="$l">Username</Th>
+							<Th fontSize="$l">Tin</Th>
+							<Th fontSize="$l">Role</Th>
+						</Tr>
+					</Thead>
+					<Tbody classList={{ pending: pending() }}>
+						<Suspense fallback={<h2>LOL</h2>}>
+							<For each={users()}>
+								{(user) =>
+									<tr>
+										<Td>{user.id}</Td>
+										<Td>{user.username}</Td>
+										<Td>{user.tin}</Td>
+										<Td>{user.roles}</Td>
+									</tr>
+								}
+							</For>
+						</Suspense>
+					</Tbody>
+				</Table>
 			</Show>
-		</>
+		</VStack>
 	);
 }
 

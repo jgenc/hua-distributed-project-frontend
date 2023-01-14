@@ -3,6 +3,8 @@ import axios from "axios";
 import LoginForm from "./components/LoginForm";
 import helper from "./utils/helper";
 import AdminPage from "./components/AdminPage";
+import Header from "./components/Header";
+import { Container } from "@hope-ui/solid";
 
 function App() {
 	const [user, setUser] = createSignal(null);
@@ -26,18 +28,19 @@ function App() {
 	};
 
 	return (
-		<>
+		<Container p="$4">
 			<Show when={user()} fallback={<LoginForm handle={handleLogin} />}>
 				<Show
 					when={!helper.isUserAdmin(user())}
 					fallback={<AdminPage
 						handleLogout={handleLogout}
 						adminToken={user().accessToken} />}>
-					<h1>Logged in as {user().username}</h1>
-					<button onClick={handleLogout}>Log Out</button>
+					<Header
+						user={user()}
+						handleLogout={handleLogout} />
 				</Show>
 			</Show>
-		</>
+		</Container>
 	);
 }
 

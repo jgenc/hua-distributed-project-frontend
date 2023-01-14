@@ -1,4 +1,5 @@
-import { mergeProps, createSignal } from "solid-js";
+import { Button, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
+import { mergeProps, createSignal, For } from "solid-js";
 import loginService from "../services/login";
 
 function LoginForm(props) {
@@ -20,6 +21,8 @@ function LoginForm(props) {
 		setUsername("");
 		setPassword("");
 
+		console.log(credentials);
+
 		if (!response) {
 			console.log("error logging in");
 			return;
@@ -28,27 +31,37 @@ function LoginForm(props) {
 	};
 
 	return (
-		<>
-			<h1>Login</h1>
-			<form onSubmit={handleLogin}>
-				<div>
-					Username:
-					<input
-						required
-						value={username()}
-						onChange={(event) => setUsername(event.target.value)}></input>
-				</div>
-				<div>
-					Password:
-					<input
-						required
+		<form onSubmit={handleLogin}>
+			<VStack
+				spacing="$5"
+				alignItems="stretch"
+				maxW="$96"
+				mx="auto"
+			>
+				<Heading size="3xl">Log In</Heading>
+				<FormControl required>
+					<FormLabel for="username">Username</FormLabel>
+					<Input
+						id="username"
+						onChange={(event) => setUsername(event.target.value)} />
+					<FormHelperText>I.e johndoexd</FormHelperText>
+				</FormControl>
+
+				<FormControl required>
+					<FormLabel for="password">Password</FormLabel>
+					<Input
 						type="password"
-						value={password()}
-						onChange={(event) => setPassword(event.target.value)}></input>
-				</div>
-				<button>Login</button>
-			</form>
-		</>
+						id="password"
+						onChange={(event) => setPassword(event.target.value)}
+					/>
+					<FormHelperText>mysekretpass123</FormHelperText>
+				</FormControl>
+
+				<HStack justifyContent="flex-end">
+					<Button type="submit">Log In</Button>
+				</HStack>
+			</VStack>
+		</form>
 	);
 }
 
