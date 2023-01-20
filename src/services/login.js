@@ -17,4 +17,15 @@ const login = async (credentials) => {
 	}
 };
 
+const isUserLoggedIn = () => {
+	const token = window.sessionStorage.getItem("userToken");
+	if (!token) return false;
+	return true;
+};
+
+const logout = () => {
+	
+}
+
+export { isUserLoggedIn };
 export default { login }; 

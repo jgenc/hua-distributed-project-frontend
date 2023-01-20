@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@hope-ui/solid": "^0.6.7",
+    "@solidjs/router": "^0.7.0",
     "@stitches/core": "^1.2.8",
     "axios": "^1.2.2",
     "solid-js": "^1.6.6",
