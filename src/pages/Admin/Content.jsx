@@ -1,10 +1,10 @@
 import userService from "../../services/users";
 import { createSignal, mergeProps, Suspense, useTransition } from "solid-js";
-import { Button, Container, Divider, FormLabel, Heading, HStack, IconButton, Input, Modal, VStack } from "@hope-ui/solid";
+import { avatarBadgeStyles, Button, Container, Divider, FormLabel, Heading, HStack, IconButton, Input, Modal, VStack } from "@hope-ui/solid";
 import AllUsers from "./AllUsers";
 import NewUser from "./NewUser";
 
-import { AiOutlineSearch } from 'solid-icons/ai'
+import { AiOutlineSearch } from 'solid-icons/ai';
 
 function AdminContent(props) {
 	let allUsers = [];
@@ -39,7 +39,7 @@ function AdminContent(props) {
 					<form onSubmit={handleSearchUsers}>
 						<HStack spacing="$3">
 							<Input onChange={handleSearchUsers} />
-							<IconButton variant="ghost" icon={<AiOutlineSearch />}/>
+							<IconButton variant="ghost" icon={<AiOutlineSearch />} />
 						</HStack>
 					</form>
 

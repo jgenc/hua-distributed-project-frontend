@@ -1,24 +1,30 @@
 import { Button, createDisclosure, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, VStack } from "@hope-ui/solid";
 import { createSignal, mergeProps } from "solid-js";
-import users from "../../services/users";
+import userService from "../../services/users";
 
 function NewUser(props) {
 	const merged = mergeProps({ users: null, setUsers: null }, props);
 
-	const handleNewUser = (event) => {
+	const handleNewUser = async (event) => {
 		event.preventDefault();
-
-		const roles = event.target.role.value;
 
 		// TODO:
 		// 			- Check for TIN, Password length, Username Length, correct role etc.
 		//      - Pass data to Database
+		// 			- Check if ID technique is correct
 
-		setNewUser({ ...newUser(), roles });
+		const role = event.target.role.value;
+		setNewUser({ ...newUser(), role });
 
-		console.log(merged.users());
+		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+		const id = await userService.createUser(newUser());
+		
+		// TODO: Notify user for error
+		if (!id) return;
+
+		setNewUser({...newUser(), id})
+
 		merged.setUsers([...merged.users(), newUser()]);
-
 		onClose();
 	};
 

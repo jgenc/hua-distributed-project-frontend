@@ -3,6 +3,9 @@ import { createSignal, onMount, Show } from "solid-js";
 import Navbar from "../../components/Navbar";
 import AdminContent from "./Content";
 
+// TODO: 
+// 			- Check for expired tokens
+
 function AdminPage(props) {
 
 	const [admin, setAdmin] = createSignal(null);

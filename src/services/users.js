@@ -21,7 +21,15 @@ const users = async () => {
 			}
 		};
 		const response = await axios.get(baseUrl, config);
-		return response.data;
+		// ! This is a workaround for the "roles" attribute the backend provides
+		// We should change the backend
+		const formattedData = response.data.map(value => {
+			const role = value.roles[0];
+			delete value.roles;
+			return {...value, role};
+		})
+		console.log(formattedData)
+		return formattedData;
 	} catch (e) {
 		console.log(e);
 		return null;
@@ -43,4 +51,29 @@ const deleteUser = async (id) => {
 	}
 };
 
-export default { users, setToken, deleteUser }; 
+/**
+ * 
+ * @param {user} user 
+ * User object to request a registration. Must contain username, password and tin
+ * attributes
+ * @returns {Number | null}
+ * Id of registered user
+ */
+const createUser = async (user) => {
+	try {
+		const config = {
+			headers: {
+				Authorization: token,
+				"Content-Type": "application/json"
+			}
+		};
+		const response = await axios.post(baseUrl, user, config);
+
+		return response.data.message.split("id:")[1];
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+};
+
+export default { users, setToken, deleteUser, createUser }; 

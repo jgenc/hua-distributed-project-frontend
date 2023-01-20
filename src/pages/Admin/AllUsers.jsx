@@ -36,8 +36,8 @@ function AllUsers(props) {
 									<Flex>
 										<Tag
 											size="md"
-											colorScheme={user.roles.includes("ROLE_ADMIN") ? "danger" : "primary"}
-										>{user.roles}</Tag>
+											colorScheme={user.role.includes("ROLE_ADMIN") ? "danger" : "primary"}
+										>{user.role}</Tag>
 
 										<Spacer />
 
@@ -53,7 +53,7 @@ function AllUsers(props) {
 											<MenuContent>
 												<MenuItem
 													colorScheme="danger"
-													disabled={user.roles.includes("ROLE_ADMIN") ? true : false}
+													disabled={user.role.includes("ROLE_ADMIN") ? true : false}
 													onSelect={() => deleteUser(user)}
 												>
 													Delete User
