@@ -1,9 +1,10 @@
 import userService from "../../services/users";
 import { createSignal, mergeProps, Suspense, useTransition } from "solid-js";
-
-import { Button, Container, Divider, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
+import { Button, Container, Divider, FormLabel, Heading, HStack, IconButton, Input, Modal, VStack } from "@hope-ui/solid";
 import AllUsers from "./AllUsers";
+import NewUser from "./NewUser";
 
+import { AiOutlineSearch } from 'solid-icons/ai'
 
 function AdminContent(props) {
 	let allUsers = [];
@@ -32,20 +33,24 @@ function AdminContent(props) {
 
 	return (
 		<Container p="$3">
-			<VStack spacing="$3">
-				<HStack spacing="$3" height="$10">
+			<VStack spacing="$10">
+				<HStack spacing="$5" height="$10">
+					{/* Maybe do not do this as a form? */}
 					<form onSubmit={handleSearchUsers}>
 						<HStack spacing="$3">
-							<FormLabel>Search</FormLabel>
 							<Input onChange={handleSearchUsers} />
+							<IconButton variant="ghost" icon={<AiOutlineSearch />}/>
 						</HStack>
 					</form>
-					<Divider orientation="vertical" />
+
 					<Button onClick={handleShowAllUsers}>Show all Users</Button>
+
+					<NewUser users={users} setUsers={setUsers} />
+
 				</HStack>
 				{/* Users */}
 				<Show when={users().length !== 0}>
-					<AllUsers users={users()} />
+					<AllUsers users={users} setUsers={setUsers} />
 				</Show>
 			</VStack>
 		</Container>

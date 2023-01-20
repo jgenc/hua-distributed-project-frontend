@@ -1,6 +1,6 @@
 import { Button, Center, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
 import { useNavigate } from "@solidjs/router";
-import { mergeProps, createSignal, For } from "solid-js";
+import { mergeProps, createSignal, For, onMount } from "solid-js";
 import loginService from "../services/login";
 
 function LoginForm(props) {
@@ -8,6 +8,12 @@ function LoginForm(props) {
 	const [password, setPassword] = createSignal("");
 
 	const navigate = useNavigate();
+
+	onMount(() => {
+		const sessionUser = JSON.parse(window.sessionStorage.getItem("userToken"));
+		if (!sessionUser) return;
+		navigate("/");
+	});
 
 	const handleLogin = async (event) => {
 		event.preventDefault();
@@ -28,6 +34,8 @@ function LoginForm(props) {
 		}
 
 		window.sessionStorage.setItem("userToken", JSON.stringify(response));
+
+		console.log(response, window.sessionStorage.getItem("userToken"))
 
 		if (response.roles.includes("ROLE_ADMIN")) {
 			navigate("/admin");

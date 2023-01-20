@@ -11,10 +11,15 @@ function AdminPage(props) {
 	onMount(() => {
 		// Check on initial page load if the browser contains a token
 		const sessionUser = JSON.parse(window.sessionStorage.getItem("userToken"));
-		if (!sessionUser) return;
-		if (!sessionUser.roles.includes("ROLE_ADMIN")) return;
+		if (!sessionUser) {
+			navigate("/");
+			return;
+		};
+		if (!sessionUser.roles.includes("ROLE_ADMIN")) {
+			navigate("/");
+			return;
+		}
 		setAdmin(sessionUser);
-		// navigate("/login");
 	});
 
 	return (

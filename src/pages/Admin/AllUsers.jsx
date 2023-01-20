@@ -1,12 +1,21 @@
 import { Table, TableCaption, Tbody, Td, Th, Tr, Thead, HStack, Button, Flex, Spacer, Tag, Divider, MenuTrigger, Menu, IconButton, MenuContent, MenuItem, SelectIcon } from "@hope-ui/solid";
 import { mergeProps } from "solid-js";
+import userService from "../../services/users";
 
 function AllUsers(props) {
-	const merged = mergeProps({ users: [] }, props);
+	const merged = mergeProps({ users: [], setUsers: null }, props);
+
+	const deleteUser = async (userToDelete) => {
+		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+
+		await userService.deleteUser(userToDelete.id);
+
+		merged.setUsers(merged.users().filter(u => u.id !== userToDelete.id));
+	};
 
 	return (
 		<>
-			<Table striped="odd" highlightOnHover>
+			<Table dense highlightOnHover>
 				<TableCaption>Data of all users in the system</TableCaption>
 				<Thead>
 					<Tr>
@@ -17,7 +26,7 @@ function AllUsers(props) {
 					</Tr>
 				</Thead>
 				<Tbody>
-					<For each={merged.users}>
+					<For each={merged.users()}>
 						{(user) =>
 							<tr>
 								<Td>{user.id}</Td>
@@ -45,6 +54,7 @@ function AllUsers(props) {
 												<MenuItem
 													colorScheme="danger"
 													disabled={user.roles.includes("ROLE_ADMIN") ? true : false}
+													onSelect={() => deleteUser(user)}
 												>
 													Delete User
 												</MenuItem>

@@ -9,6 +9,8 @@ function Navbar(props) {
 	const navigate = useNavigate();
 
 	onMount(() => {
+		// TODO
+		// Tokens expire. What to do with that???
 		const token = JSON.parse(window.sessionStorage.getItem("userToken"));
 		if (!token) return;
 		setUser(token);
