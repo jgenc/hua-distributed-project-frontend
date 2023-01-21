@@ -1,17 +1,10 @@
-import { Table, TableCaption, Tbody, Td, Th, Tr, Thead, HStack, Button, Flex, Spacer, Tag, Divider, MenuTrigger, Menu, IconButton, MenuContent, MenuItem, SelectIcon } from "@hope-ui/solid";
+import { Table, TableCaption, Tbody, Td, Th, Tr, Thead, HStack, Button, Flex, Spacer, Tag, Divider, MenuTrigger, Menu, IconButton, MenuContent, MenuItem, SelectIcon, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody } from "@hope-ui/solid";
 import { mergeProps } from "solid-js";
+import TableContent from "../../components/TableContent";
 import userService from "../../services/users";
 
 function AllUsers(props) {
 	const merged = mergeProps({ users: [], setUsers: null }, props);
-
-	const deleteUser = async (userToDelete) => {
-		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-
-		await userService.deleteUser(userToDelete.id);
-
-		merged.setUsers(merged.users().filter(u => u.id !== userToDelete.id));
-	};
 
 	return (
 		<>
@@ -27,46 +20,7 @@ function AllUsers(props) {
 				</Thead>
 				<Tbody>
 					<For each={merged.users()}>
-						{(user) =>
-							<tr>
-								<Td>{user.id}</Td>
-								<Td>{user.username}</Td>
-								<Td>{user.tin}</Td>
-								<Td>
-									<Flex>
-										<Tag
-											size="md"
-											colorScheme={user.role.includes("ROLE_ADMIN") ? "danger" : "primary"}
-										>{user.role}</Tag>
-
-										<Spacer />
-
-										<Menu>
-											<MenuTrigger
-												as={Button}
-												variant="subtle"
-												colorScheme="neutral"
-												rightIcon=""
-											>
-												Actions
-											</MenuTrigger>
-											<MenuContent>
-												<MenuItem
-													colorScheme="danger"
-													disabled={user.role.includes("ROLE_ADMIN") ? true : false}
-													onSelect={() => deleteUser(user)}
-												>
-													Delete User
-												</MenuItem>
-												<MenuItem>Change Username</MenuItem>
-												<MenuItem>Change Password</MenuItem>
-												<MenuItem>Set Roles</MenuItem>
-											</MenuContent>
-										</Menu>
-									</Flex>
-								</Td>
-							</tr>
-						}
+						{(user) => <TableContent user={user} users={merged.users} setUsers={merged.setUsers}/>}
 					</For>
 				</Tbody>
 			</Table>

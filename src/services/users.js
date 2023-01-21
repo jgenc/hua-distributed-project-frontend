@@ -26,9 +26,9 @@ const users = async () => {
 		const formattedData = response.data.map(value => {
 			const role = value.roles[0];
 			delete value.roles;
-			return {...value, role};
-		})
-		console.log(formattedData)
+			return { ...value, role };
+		});
+		console.log(formattedData);
 		return formattedData;
 	} catch (e) {
 		console.log(e);
@@ -76,4 +76,23 @@ const createUser = async (user) => {
 	}
 };
 
-export default { users, setToken, deleteUser, createUser }; 
+const changePassword = async (id, password) => {
+	try {
+		const config = {
+			headers: {
+				Authorization: token,
+				"Content-Type": "application/json"
+			}
+		};
+		const passwordObject = {
+			password
+		};
+		const response = await axios.post(baseUrl.concat(`/${id}`), passwordObject, config);
+		return response.data;
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+};
+
+export default { users, setToken, deleteUser, createUser, changePassword }; 

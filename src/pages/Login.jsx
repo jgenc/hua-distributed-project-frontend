@@ -1,11 +1,13 @@
-import { Button, Center, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Center, CloseButton, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
 import { useNavigate } from "@solidjs/router";
-import { mergeProps, createSignal, For, onMount } from "solid-js";
+import { mergeProps, createSignal, For, onMount, Show } from "solid-js";
 import loginService from "../services/login";
 
 function LoginForm(props) {
 	const [username, setUsername] = createSignal("");
 	const [password, setPassword] = createSignal("");
+
+	const [notification, setNotification] = createSignal(false);
 
 	const navigate = useNavigate();
 
@@ -30,12 +32,13 @@ function LoginForm(props) {
 
 		if (!response) {
 			console.log("error logging in");
+			setNotification(true);
 			return;
 		}
 
 		window.sessionStorage.setItem("userToken", JSON.stringify(response));
 
-		console.log(response, window.sessionStorage.getItem("userToken"))
+		console.log(response, window.sessionStorage.getItem("userToken"));
 
 		if (response.roles.includes("ROLE_ADMIN")) {
 			navigate("/admin");
@@ -48,44 +51,56 @@ function LoginForm(props) {
 	return (
 		<Center h="$xl">
 			<Container centerContent>
-				<form onSubmit={handleLogin}>
-					<VStack
-						spacing="$5"
-						alignItems="stretch"
-						maxW="$96"
-						mx="auto"
-						borderWidth="1px"
-						borderColor="$neutral6"
-						borderRadius="$lg"
-						p="$5"
-					>
-						<Heading size="3xl">Log In</Heading>
-						<FormControl required>
-							<FormLabel for="username">Username</FormLabel>
-							<Input
-								id="username"
-								onChange={(event) => setUsername(event.target.value)}
-								value={username()}
-							/>
-							<FormHelperText>I.e johndoexd</FormHelperText>
-						</FormControl>
+				<VStack spacing="$5">
+					<Show when={notification()}>
+						<Alert variant="left-accent" status="danger">
+							<AlertIcon mr="$2_5" />
+							<AlertTitle mr="$2_5">Η σύνδεση ήταν αδύνατη!</AlertTitle>
+							<AlertDescription>Ελέγξτε ξανά τα στοιχεία σας.</AlertDescription>
+							{/* <CloseButton position="absolute" right="8px" top="8px" /> */}
+						</Alert>
+					</Show>
 
-						<FormControl required>
-							<FormLabel for="password">Password</FormLabel>
-							<Input
-								type="password"
-								id="password"
-								onChange={(event) => setPassword(event.target.value)}
-								value={password()}
-							/>
-							<FormHelperText>mysekretpass123</FormHelperText>
-						</FormControl>
+					<form onSubmit={handleLogin}>
+						<VStack
+							spacing="$5"
+							alignItems="stretch"
+							maxW="$96"
+							mx="auto"
+							borderWidth="1px"
+							borderColor="$neutral6"
+							borderRadius="$lg"
+							p="$5"
+						>
+							<Heading size="3xl">Συνδεθείτε</Heading>
+							<FormControl required>
+								<FormLabel for="username">Username</FormLabel>
+								<Input
+									id="username"
+									onChange={(event) => setUsername(event.target.value)}
+									value={username()}
+								/>
+								<FormHelperText>I.e johndoexd</FormHelperText>
+							</FormControl>
 
-						<HStack justifyContent="flex-end">
-							<Button type="submit">Log In</Button>
-						</HStack>
-					</VStack>
-				</form>
+							<FormControl required>
+								<FormLabel for="password">Password</FormLabel>
+								<Input
+									type="password"
+									id="password"
+									onChange={(event) => setPassword(event.target.value)}
+									value={password()}
+								/>
+								<FormHelperText>mysekretpass123</FormHelperText>
+							</FormControl>
+
+							<HStack justifyContent="flex-end">
+								<Button type="submit">Log In</Button>
+							</HStack>
+						</VStack>
+					</form>
+
+				</VStack>
 			</Container>
 
 		</Center>
