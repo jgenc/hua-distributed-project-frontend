@@ -1,8 +1,7 @@
 import userService from "../services/users";
 import { mergeProps } from "solid-js";
 
-import { Button, createDisclosure, Flex, FormControl, FormLabel, HStack, Icon, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
-import { CgDanger } from "solid-icons/cg";
+import { Button, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
 
 function TableContent(props) {
 	const merged = mergeProps({ user: {}, users: null, setUsers: null }, props);
@@ -10,12 +9,14 @@ function TableContent(props) {
 
 	// ! This is ugly
 	let modals = [];
-	for (let i = 0; i < 4; i++) {
+	for (let i = 0; i < 5; i++) {
 		const { isOpen, onOpen, onClose } = createDisclosure();
 		modals.push({ isOpen, onOpen, onClose });
 	}
 
-	// ! Find a better place for this
+
+
+	// ! Find a better place for handlers and fix the seira
 	const deleteUser = async () => {
 		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
 		await userService.deleteUser(user.id);
@@ -31,16 +32,57 @@ function TableContent(props) {
 
 		if (newPassword !== newPasswordConfirm) {
 			// TODO: Spawn notification
-			console.log("pwds not the same")
+			console.log("pwds not the same");
 			return;
 		}
 
 		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-		userService.changePassword(user.id, newPassword)
+		await userService.changePassword(user.id, newPassword);
 
 		// TODO: Spawn successful notification
-		
-	}
+
+	};
+
+	const changeInformation = async (event) => {
+		event.preventDefault();
+
+		const newUsername = event.target[0].value;
+		const newTin = event.target[1].value;
+		const newRole = event.target[2].value;
+
+		// TODO: Form checking
+		// Check if values have changed
+		if (newUsername === user.username) {
+			// return;
+		}
+
+		if (newTin === user.tin) {
+			// return;
+		}
+
+		if (newRole === user.role) {
+			// return;
+		}
+
+		const updatedUser = {
+			username: newUsername,
+			tin: newTin,
+			role: newRole
+		};
+
+		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+		const result = await userService.updateUser(user.id, updatedUser);
+
+		if (!result) {
+			// TODO: Spawn notification
+			console.log("error in backend");
+			return;
+		}
+
+		merged.setUsers(merged.users().map(val => val.id === user.id ? ({...updatedUser, id: val.id}) : val));
+
+		// TODO: Spawn notification
+	};
 
 	return (
 		<tr>
@@ -89,23 +131,33 @@ function TableContent(props) {
 								</Modal>
 							</MenuItem>
 
-							<MenuItem onSelect={() => modals[1].onOpen()}>
-								Αλλαγή Username
+							<MenuItem onSelect={() => modals[1].onOpen()} disabled={user.role === "ROLE_ADMIN"}>
+								Αλλαγή Στοιχείων
 								<Modal opened={modals[1].isOpen()} onClose={() => modals[1].onClose()}>
 									<ModalOverlay />
 									<ModalContent>
 										<ModalCloseButton />
-										<ModalHeader>Αλλαγή username</ModalHeader>
+										<ModalHeader>Αλλαγή Στοιχείων Χρήστη <b>{user.username}</b></ModalHeader>
 										<ModalBody>
-											<form>
+											<form onSubmit={changeInformation}>
 												<VStack spacing="$4" alignItems="stretch">
 													<FormControl>
-														<FormLabel>Από</FormLabel>
-														<Input value={user.username} disabled />
+														<FormLabel>Username</FormLabel>
+														<Input value={user.username} minLength="3" maxLength="20" />
 													</FormControl>
-													<FormControl required>
-														<FormLabel>Σε</FormLabel>
-														<Input />
+
+													<FormControl>
+														<FormLabel>TIN</FormLabel>
+														<Input value={user.tin} minLength="9" maxLength="9" />
+													</FormControl>
+
+													<FormControl>
+														<RadioGroup>
+															<HStack spacing="$4">
+																<Radio value="ROLE_NOTARY">Notary</Radio>
+																<Radio value="ROLE_CITIZEN">Citizen</Radio>
+															</HStack>
+														</RadioGroup>
 													</FormControl>
 
 													<HStack justifyContent="flex-end">
@@ -137,34 +189,6 @@ function TableContent(props) {
 														<Input type="password" minLength="8" />
 													</FormControl>
 
-													<HStack justifyContent="flex-end">
-														<Button type="submit" colorScheme="success">Αλλαγή</Button>
-													</HStack>
-												</VStack>
-											</form>
-										</ModalBody>
-									</ModalContent>
-								</Modal>
-							</MenuItem>
-
-							<MenuItem onSelect={() => modals[3].onOpen()}>
-								Αλλαγή Ρόλου
-								<Modal opened={modals[3].isOpen()} onClose={() => modals[3].onClose()}>
-									<ModalOverlay />
-									<ModalContent>
-										<ModalCloseButton />
-										<ModalHeader>Αλλαγή Ρόλου</ModalHeader>
-										<ModalBody>
-											<form>
-												<VStack spacing="$4" alignItems="stretch">
-													<FormControl>
-														<RadioGroup>
-															<HStack spacing="$4">
-																<Radio disabled={user.role === "ROLE_NOTARY"} value="ROLE_NOTARY">Notary</Radio>
-																<Radio disabled={user.role === "ROLE_CITIZEN"} value="ROLE_CITIZEN">Citizen</Radio>
-															</HStack>
-														</RadioGroup>
-													</FormControl>
 													<HStack justifyContent="flex-end">
 														<Button type="submit" colorScheme="success">Αλλαγή</Button>
 													</HStack>

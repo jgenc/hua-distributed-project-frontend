@@ -95,4 +95,20 @@ const changePassword = async (id, password) => {
 	}
 };
 
-export default { users, setToken, deleteUser, createUser, changePassword }; 
+const updateUser = async (id, updatedUserObject) => {
+	try {
+		const config = {
+			headers: {
+				Authorization: token,
+				"Content-Type": "application/json"
+			}
+		};
+		const response = await axios.put(baseUrl.concat(`/${id}`), updatedUserObject, config);
+		return response.data;
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+};
+
+export default { users, setToken, deleteUser, createUser, changePassword, updateUser }; 
