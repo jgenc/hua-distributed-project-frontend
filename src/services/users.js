@@ -2,7 +2,7 @@ import axios from "axios";
 
 const apiUrl = "/api/admin/user";
 let baseUrl = "http://localhost:8080";
-const backendUrl = import.meta.env.BACKEND;
+const backendUrl = import.meta.env.VITE_SOLID_BACKEND;
 baseUrl = backendUrl
 	? backendUrl.concat(apiUrl)
 	: baseUrl.concat(apiUrl);
