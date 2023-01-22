@@ -1,5 +1,4 @@
-import { Container, Divider } from "@hope-ui/solid";
-import Footer from "../components/Footer";
+import { Container } from "@hope-ui/solid";
 import Navbar from "../components/Navbar";
 
 function Home(props) {

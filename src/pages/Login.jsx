@@ -1,6 +1,6 @@
-import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Center, CloseButton, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Center, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
 import { useNavigate } from "@solidjs/router";
-import { mergeProps, createSignal, For, onMount, Show } from "solid-js";
+import { createSignal, onMount, Show } from "solid-js";
 import loginService from "../services/login";
 
 function LoginForm(props) {
@@ -44,7 +44,7 @@ function LoginForm(props) {
 			navigate("/admin");
 		} else {
 			// Navigate normal user to his page
-			navigate("/");
+			navigate("/account");
 		}
 	};
 
@@ -57,7 +57,6 @@ function LoginForm(props) {
 							<AlertIcon mr="$2_5" />
 							<AlertTitle mr="$2_5">Η σύνδεση ήταν αδύνατη!</AlertTitle>
 							<AlertDescription>Ελέγξτε ξανά τα στοιχεία σας.</AlertDescription>
-							{/* <CloseButton position="absolute" right="8px" top="8px" /> */}
 						</Alert>
 					</Show>
 

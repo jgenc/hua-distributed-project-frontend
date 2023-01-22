@@ -50,7 +50,9 @@ function TableContent(props) {
 		const newTin = event.target[1].value;
 		const newRole = event.target[2].value;
 
-		// TODO: Form checking
+		// !!!!!!!!!!!!!!!!!!!!!!
+		// TODO: Form VALIDATION 
+		// !!!!!!!!!!!!!!!!!!!!!!
 		// Check if values have changed
 		if (newUsername === user.username) {
 			// return;

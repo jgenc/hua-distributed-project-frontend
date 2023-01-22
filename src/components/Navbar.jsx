@@ -1,8 +1,10 @@
-import { Anchor, Box, Button, Container, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer } from "@hope-ui/solid";
+import { Box, Button, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer } from "@hope-ui/solid";
 import { Link, useNavigate } from "@solidjs/router";
-import { createSignal, mergeProps, onMount, Show } from "solid-js";
-import { isUserLoggedIn } from "../services/login";
+import { createSignal, onMount, Show } from "solid-js";
 
+// TODO: 
+// 			- Display user's account name instead of username
+// 			- 
 
 function Navbar(props) {
 	const [user, setUser] = createSignal(null);

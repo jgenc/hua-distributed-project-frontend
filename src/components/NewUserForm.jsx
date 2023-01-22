@@ -1,8 +1,8 @@
-import { Button, createDisclosure, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, VStack } from "@hope-ui/solid";
+import { Button, createDisclosure, FormControl, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, VStack } from "@hope-ui/solid";
 import { createSignal, mergeProps } from "solid-js";
-import userService from "../../services/users";
+import userService from "../services/users";
 
-function NewUser(props) {
+function NewUserForm(props) {
 	const merged = mergeProps({ users: null, setUsers: null }, props);
 
 	const handleNewUser = async (event) => {
@@ -18,11 +18,11 @@ function NewUser(props) {
 
 		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
 		const id = await userService.createUser(newUser());
-		
+
 		// TODO: Notify user for error
 		if (!id) return;
 
-		setNewUser({...newUser(), id})
+		setNewUser({ ...newUser(), id });
 
 		merged.setUsers([...merged.users(), newUser()]);
 		onClose();
@@ -88,8 +88,7 @@ function NewUser(props) {
 							</form>
 						</ModalBody>
 
-						<ModalFooter>
-						</ModalFooter>
+						<ModalFooter />
 					</ModalContent>
 				</ModalOverlay>
 			</Modal>
@@ -97,4 +96,4 @@ function NewUser(props) {
 	);
 }
 
-export default NewUser;
+export default NewUserForm;

@@ -1,7 +1,7 @@
 import { useNavigate } from "@solidjs/router";
 import { createSignal, onMount, Show } from "solid-js";
 import Navbar from "../../components/Navbar";
-import AdminContent from "./Content";
+import AdminContent from "./AdminContent";
 
 // TODO: 
 // 			- Check for expired tokens
@@ -17,7 +17,7 @@ function AdminPage(props) {
 		if (!sessionUser) {
 			navigate("/");
 			return;
-		};
+		}
 		if (!sessionUser.roles.includes("ROLE_ADMIN")) {
 			navigate("/");
 			return;

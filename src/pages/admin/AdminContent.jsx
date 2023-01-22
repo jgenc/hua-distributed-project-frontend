@@ -1,10 +1,10 @@
 import userService from "../../services/users";
-import { createSignal, mergeProps, Suspense, useTransition } from "solid-js";
-import { avatarBadgeStyles, Button, Container, Divider, FormLabel, Heading, HStack, IconButton, Input, Modal, VStack } from "@hope-ui/solid";
-import AllUsers from "./AllUsers";
-import NewUser from "./NewUser";
+import { createSignal, Show } from "solid-js";
+import { Button, Container, HStack, IconButton, Input, VStack } from "@hope-ui/solid";
+import TableUsers from "../../components/TableUsers";
+import NewUserForm from "../../components/NewUserForm";
 
-import { AiOutlineSearch } from 'solid-icons/ai';
+import { AiOutlineSearch } from "solid-icons/ai";
 
 function AdminContent(props) {
 	let allUsers = [];
@@ -39,18 +39,18 @@ function AdminContent(props) {
 					<form onSubmit={handleSearchUsers}>
 						<HStack spacing="$3">
 							<Input onChange={handleSearchUsers} />
-							<IconButton variant="ghost" icon={<AiOutlineSearch />} />
+							<IconButton type="submit" variant="ghost" icon={<AiOutlineSearch />} />
 						</HStack>
 					</form>
 
 					<Button onClick={handleShowAllUsers}>Show all Users</Button>
 
-					<NewUser users={users} setUsers={setUsers} />
+					<NewUserForm users={users} setUsers={setUsers} />
 
 				</HStack>
 				{/* Users */}
 				<Show when={users().length !== 0}>
-					<AllUsers users={users} setUsers={setUsers} />
+					<TableUsers users={users} setUsers={setUsers} />
 				</Show>
 			</VStack>
 		</Container>

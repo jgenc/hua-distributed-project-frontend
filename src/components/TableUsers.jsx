@@ -1,9 +1,8 @@
-import { Table, TableCaption, Tbody, Td, Th, Tr, Thead, HStack, Button, Flex, Spacer, Tag, Divider, MenuTrigger, Menu, IconButton, MenuContent, MenuItem, SelectIcon, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody } from "@hope-ui/solid";
-import { mergeProps } from "solid-js";
-import TableContent from "../../components/TableContent";
-import userService from "../../services/users";
+import { Table, TableCaption, Tbody, Th, Tr, Thead } from "@hope-ui/solid";
+import { mergeProps, For } from "solid-js";
+import TableContent from "./TableContent";
 
-function AllUsers(props) {
+function TableUsers(props) {
 	const merged = mergeProps({ users: [], setUsers: null }, props);
 
 	return (
@@ -28,4 +27,4 @@ function AllUsers(props) {
 	);
 }
 
-export default AllUsers;
+export default TableUsers;
