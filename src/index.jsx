@@ -1,9 +1,9 @@
 /* @refresh reload */
-import { render } from 'solid-js/web';
-import { Router } from "@solidjs/router"
+import { render } from "solid-js/web";
+import { Router } from "@solidjs/router";
 
-import './index.css';
-import App from './App';
+import "./index.css";
+import App from "./App";
 import { HopeProvider } from "@hope-ui/solid";
 
 render(() =>
@@ -12,4 +12,4 @@ render(() =>
 			<App />
 		</HopeProvider>
 	</Router>
-	, document.getElementById('root'));
+, document.getElementById("root"));

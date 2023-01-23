@@ -2,8 +2,9 @@ import { Route, Routes } from "@solidjs/router";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Admin from "./pages/admin/Admin";
-import Account from "./pages/Account";
+import NewAccount from "./components/NewAccount";
 import Navbar from "./components/Navbar";
+import Account from "./pages/Account";
 
 // ? Create a Layout component
 
@@ -16,6 +17,7 @@ function App() {
 			<Route path="/admin" component={Admin} />
 			<Route path="/login" component={Login} />
 			<Route path="/account" component={Account} />
+			<Route path="/account/new" component={NewAccount} />
 		</Routes>
 	);
 }

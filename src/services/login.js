@@ -9,7 +9,6 @@ baseUrl = backendUrl
 
 const login = async (credentials) => {
 	try {
-		console.log(baseUrl, backendUrl);
 		const response = await axios.post(baseUrl, credentials);
 		return response.data;
 	} catch (e) {

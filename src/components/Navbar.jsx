@@ -1,26 +1,48 @@
 import { Box, Button, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer } from "@hope-ui/solid";
 import { Link, useNavigate } from "@solidjs/router";
 import { createSignal, onMount, Show } from "solid-js";
+import AdminContent from "../pages/admin/AdminContent";
+
+import accountService from "../services/account";
 
 // TODO: 
 // 			- Display user's account name instead of username
 // 			- 
 
 function Navbar(props) {
-	const [user, setUser] = createSignal(null);
+	const [account, setAccount] = createSignal(null);
 	const navigate = useNavigate();
 
 	onMount(() => {
 		// TODO
 		// Tokens expire. What to do with that???
-		const token = JSON.parse(window.sessionStorage.getItem("userToken"));
-		if (!token) return;
-		setUser(token);
+		const userToken = JSON.parse(window.sessionStorage.getItem("userToken"));
+		if (!userToken) return;
+
+		if (userToken.roles.includes("ROLE_ADMIN")) {
+			setAccount({
+				firstName: "admin",
+				lastname: ""
+			});
+			return;
+		}
+
+		let accountToken = window.sessionStorage.getItem("accountToken");
+		if (!accountToken) {
+			clearTokens();
+			return;
+		}
+		setAccount(JSON.parse(accountToken));
 	});
 
-	const handleLogout = () => {
+	const clearTokens = () => {
 		window.sessionStorage.removeItem("userToken");
-		setUser(null);
+		window.sessionStorage.removeItem("accountToken");
+	};
+
+	const handleLogout = () => {
+		clearTokens();
+		setAccount(null);
 		navigate("/");
 	};
 
@@ -35,15 +57,14 @@ function Navbar(props) {
 				<Spacer />
 				<Box>
 					<HStack spacing="$3">
-						{/* <Anchor as={Link} href="/help">Help</Anchor> */}
-						<Show when={user()} fallback={
+						<Show when={account()} fallback={
 							<Button as={Link} href="/login">Log in</Button>
 						}>
 							<p>
-								Logged in as <b> {user().username}</b>
+								Καλωσήρθατε, <b>{account().firstName} {account().lastName}</b>
 							</p>
 							<Menu>
-								<MenuTrigger as={Button} colorScheme="info">
+								<MenuTrigger as={Button} variant="subtle" colorScheme="info">
 									Profile
 								</MenuTrigger>
 								<MenuContent>

@@ -18,7 +18,7 @@ function NewUserForm(props) {
 
 	// Using Felte Forms and Yup Validator
 	const { form, errors, isValid } = createForm({
-		extend: [validator({ schema })],
+		extend: validator({ schema }),
 		onSubmit: async newUser => {
 			setSpinner(true);
 			userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
@@ -58,8 +58,6 @@ function NewUserForm(props) {
 									<FormLabel for="username">Username</FormLabel>
 									<Input
 										name="username"
-										minLength="3"
-										maxLength="30"
 									/>
 									<FormErrorMessage>{errors("username")[0]}</FormErrorMessage>
 								</FormControl>
@@ -69,8 +67,6 @@ function NewUserForm(props) {
 									<Input
 										name="password"
 										type="password"
-										minLength="8"
-										maxLength="30"
 									/>
 									<FormErrorMessage>{errors("password")[0]}</FormErrorMessage>
 								</FormControl>

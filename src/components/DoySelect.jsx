@@ -1,23 +1,24 @@
 import { Select, SelectContent, SelectIcon, SelectListbox, SelectOption, SelectOptionIndicator, SelectOptionText, SelectPlaceholder, SelectTrigger, SelectValue, SimpleOption, SimpleSelect } from "@hope-ui/solid";
-import { For } from "solid-js";
-function DoySelect(props) {
+import { For, mergeProps } from "solid-js";
+const doy = [
+	"ΑΘΗΝΩΝ Α'",
+	"ΑΘΗΝΩΝ Δ'",
+	"ΑΓ. ΔΗΜΗΤΡΙΟΥ",
+	"ΚΑΛΛΙΘΕΑΣ Α'",
+	"ΝΕΑΣ ΙΩΝΙΑΣ",
+	"ΝΕΑΣ ΣΜΥΡΝΗΣ",
+	"ΧΑΛΑΝΔΡΙΟΥ",
+	"ΑΜΑΡΟΥΣΙΟΥ",
+	"ΑΙΓΑΛΕΩ",
+	"ΠΕΡΙΣΤΕΡΙΟΥ Α'",
+	"ΒΥΡΩΝΑ",
+	"ΠΕΙΡΑΙΑ Α'",
+	"ΒΟΛΟΥ Α'",
+	"ΘΕΣΣΑΛΟΝΙΚΗΣ Α'",
+];
 
-	const doy = [
-		"ΑΘΗΝΩΝ Α'",
-		"ΑΘΗΝΩΝ Δ'",
-		"ΑΓ. ΔΗΜΗΤΡΙΟΥ",
-		"ΚΑΛΛΙΘΕΑΣ Α'",
-		"ΝΕΑΣ ΙΩΝΙΑΣ",
-		"ΝΕΑΣ ΣΜΥΡΝΗΣ",
-		"ΧΑΛΑΝΔΡΙΟΥ",
-		"ΑΜΑΡΟΥΣΙΟΥ",
-		"ΑΙΓΑΛΕΩ",
-		"ΠΕΡΙΣΤΕΡΙΟΥ Α'",
-		"ΒΥΡΩΝΑ",
-		"ΠΕΙΡΑΙΑ Α'",
-		"ΒΟΛΟΥ Α'",
-		"ΘΕΣΣΑΛΟΝΙΚΗΣ Α'",
-	];
+function DoySelect(props) {
+	const merged = mergeProps({ setFields: null }, props);
 
 	return (
 		// <Select>
@@ -39,7 +40,7 @@ function DoySelect(props) {
 		// 		</SelectListbox>
 		// 	</SelectContent>
 		// </Select>
-		<SimpleSelect placeholder="Διάλεξε ΔΟΥ">
+		<SimpleSelect name="doy" placeholder="Διάλεξε ΔΟΥ" onChange={value => merged.setFields("doy", value)}>
 			<For each={doy}>
 				{item => <SimpleOption value={item}>{item}</SimpleOption>}
 			</For>
@@ -48,3 +49,4 @@ function DoySelect(props) {
 }
 
 export default DoySelect;
+export { doy };

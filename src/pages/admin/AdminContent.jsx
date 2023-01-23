@@ -1,6 +1,6 @@
 import userService from "../../services/users";
 import { createSignal, Show } from "solid-js";
-import { Button, Container, HStack, IconButton, Input, Skeleton, Table, TableCaption, Tbody, Th, Thead, Tr, VStack } from "@hope-ui/solid";
+import { Button, Container, HStack, IconButton, Input, VStack } from "@hope-ui/solid";
 import TableUsers from "../../components/TableUsers";
 import NewUserForm from "../../components/NewUserForm";
 
@@ -26,7 +26,7 @@ function AdminContent(props) {
 
 	const handleSearchUsers = async (event) => {
 		event.preventDefault();
-		const searchValue = event.target[0].value;
+		const searchValue = document.getElementById("search").value;
 
 		if (allUsers.length === 0) await handleShowAllUsers();
 
@@ -38,13 +38,10 @@ function AdminContent(props) {
 		<Container p="$3">
 			<VStack spacing="$10">
 				<HStack spacing="$5" height="$10">
-					{/* Maybe do not do this as a form? */}
-					<form onSubmit={handleSearchUsers}>
-						<HStack spacing="$3">
-							<Input onChange={handleSearchUsers} />
-							<IconButton type="submit" variant="ghost" icon={<AiOutlineSearch />} />
-						</HStack>
-					</form>
+					<HStack spacing="$3">
+						<Input id="search" onChange={handleSearchUsers} />
+						<IconButton type="submit" variant="ghost" icon={<AiOutlineSearch />} />
+					</HStack>
 
 					<Button onClick={handleShowAllUsers} loading={spinner()}>Show all Users</Button>
 					<NewUserForm users={users} setUsers={setUsers} />

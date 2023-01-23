@@ -1,13 +1,20 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Center, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
 import { useNavigate } from "@solidjs/router";
 import { createSignal, onMount, Show } from "solid-js";
+import accountService from "../services/account";
 import loginService from "../services/login";
+
+// !!!!!!!!!!!!!!!!!!!!
+// TODO: Update form to be used with felte
+// !!!!!!!!!!!!!!!!!!!!
+
 
 function LoginForm(props) {
 	const [username, setUsername] = createSignal("");
 	const [password, setPassword] = createSignal("");
 
 	const [notification, setNotification] = createSignal(false);
+	const [spinner, setSpinner] = createSignal(false);
 
 	const navigate = useNavigate();
 
@@ -25,27 +32,38 @@ function LoginForm(props) {
 			password: password()
 		};
 
-		const response = await loginService.login(credentials);
+		setSpinner(true);
+		const userToken = await loginService.login(credentials);
+		setSpinner(false);
 
 		setUsername("");
 		setPassword("");
 
-		if (!response) {
+		if (!userToken) {
 			console.log("error logging in");
 			setNotification(true);
 			return;
 		}
 
-		window.sessionStorage.setItem("userToken", JSON.stringify(response));
+		window.sessionStorage.setItem("userToken", JSON.stringify(userToken));
 
-		console.log(response, window.sessionStorage.getItem("userToken"));
-
-		if (response.roles.includes("ROLE_ADMIN")) {
+		if (userToken.roles.includes("ROLE_ADMIN")) {
 			navigate("/admin");
-		} else {
-			// Navigate normal user to his page
-			navigate("/account");
+			return;
 		}
+
+		accountService.setToken(userToken.accessToken);
+		const accountToken = await accountService.getAccount(userToken.tin);
+		if (!accountToken) {
+			// Navigate first time user to new account form
+			navigate("/account/new");
+			return;
+		}
+
+		window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
+
+		// Navigate user with account to account
+		navigate("/account");
 	};
 
 	return (
@@ -94,7 +112,7 @@ function LoginForm(props) {
 							</FormControl>
 
 							<HStack justifyContent="flex-end">
-								<Button type="submit">Log In</Button>
+								<Button type="submit" loading={spinner()}>Log In</Button>
 							</HStack>
 						</VStack>
 					</form>

@@ -35,7 +35,7 @@ const getAccount = async (tin) => {
 				Authorization: token
 			}
 		};
-		const response = await axios.post(baseUrl, accountObject, config);
+		const response = await axios.get(baseUrl.concat(`/${tin}`), config);
 		return response.data;
 	} catch (e) {
 		console.log(e);
@@ -43,4 +43,4 @@ const getAccount = async (tin) => {
 	}
 };
 
-export default { setToken, newAccount };
+export default { setToken, newAccount, getAccount };
