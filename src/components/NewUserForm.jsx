@@ -1,36 +1,41 @@
-import { Button, createDisclosure, FormControl, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, VStack } from "@hope-ui/solid";
+import { Button, createDisclosure, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, VStack } from "@hope-ui/solid";
 import { createSignal, mergeProps } from "solid-js";
 import userService from "../services/users";
+
+import { createForm } from "@felte/solid";
+import { validator } from "@felte/validator-yup";
+import { mixed, object, string } from "yup";
+
+const schema = object({
+	username: string().min(3).max(30).required(),
+	password: string().min(8).max(30).required(),
+	tin: string().length(9).required(),
+	role: mixed().oneOf(["ROLE_CITIZEN", "ROLE_NOTARY"]).required()
+});
 
 function NewUserForm(props) {
 	const merged = mergeProps({ users: null, setUsers: null }, props);
 
-	const handleNewUser = async (event) => {
-		event.preventDefault();
+	// Using Felte Forms and Yup Validator
+	const { form, errors, isValid } = createForm({
+		extend: [validator({ schema })],
+		onSubmit: async newUser => {
+			setSpinner(true);
+			userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+			const id = await userService.createUser(newUser);
+			setSpinner(false);
 
-		// TODO:
-		// 			- Check for TIN, Password length, Username Length, correct role etc.
-		//      - Pass data to Database
-		// 			- Check if ID technique is correct
+			if (!id) return;
+			merged.setUsers([...merged.users(), { ...newUser, id }]);
+			onClose();
+		},
+	});
 
-		const role = event.target.role.value;
-		setNewUser({ ...newUser(), role });
+	// * TESTING
+	const [spinner, setSpinner] = createSignal(false);
 
-		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-		const id = await userService.createUser(newUser());
-
-		// TODO: Notify user for error
-		if (!id) return;
-
-		setNewUser({ ...newUser(), id });
-
-		merged.setUsers([...merged.users(), newUser()]);
-		onClose();
-	};
-
-	const [newUser, setNewUser] = createSignal();
 	const { isOpen, onOpen, onClose } = createDisclosure();
-
+	
 	return (
 		<>
 			<Button onClick={onOpen}>Add New User</Button>
@@ -39,56 +44,68 @@ function NewUserForm(props) {
 					<ModalContent>
 						<ModalCloseButton />
 						<ModalHeader>Add new user</ModalHeader>
+						<Divider />
 						<ModalBody>
-							<form onSubmit={handleNewUser}>
-								<VStack
-									spacing="$5"
-									alignItems="stretch"
-									maxW="$96"
-									mx="auto"
-								>
-									{/* TODO: Add form checks */}
-									<FormControl required>
-										<FormLabel for="username">Username</FormLabel>
-										<Input
-											id="username"
-											onChange={(event) => setNewUser({ ...newUser(), username: event.target.value })}
-										/>
-									</FormControl>
+							<VStack
+								as="form"
+								ref={form}
+								spacing="$5"
+								alignItems="stretch"
+								maxW="$96"
+								mx="auto"
+							>
+								<FormControl required invalid={!!errors("username")}>
+									<FormLabel for="username">Username</FormLabel>
+									<Input
+										name="username"
+										minLength="3"
+										maxLength="30"
+									/>
+									<FormErrorMessage>{errors("username")[0]}</FormErrorMessage>
+								</FormControl>
 
-									<FormControl required>
-										<FormLabel for="password">Password</FormLabel>
-										<Input
-											type="password"
-											id="password"
-											onChange={(event) => setNewUser({ ...newUser(), password: event.target.value })}
-										/>
-									</FormControl>
+								<FormControl required invalid={!!errors("password")}>
+									<FormLabel for="password">Password</FormLabel>
+									<Input
+										name="password"
+										type="password"
+										minLength="8"
+										maxLength="30"
+									/>
+									<FormErrorMessage>{errors("password")[0]}</FormErrorMessage>
+								</FormControl>
 
-									<FormControl required>
-										<FormLabel for="tin">TIN</FormLabel>
-										<Input
-											id="tin"
-											onChange={(event) => setNewUser({ ...newUser(), tin: event.target.value })}
-										/>
-									</FormControl>
+								<FormControl required invalid={!!errors("tin")}>
+									<FormLabel for="tin">TIN</FormLabel>
+									<Input
+										name="tin"
+										minLength="9"
+										maxLength="9"
+									/>
+									<FormErrorMessage>{errors("tin")[0]}</FormErrorMessage>
+								</FormControl>
 
-									<FormControl required>
-										<FormLabel for="role">Role</FormLabel>
-										<RadioGroup name="role">
-											<HStack spacing="$4">
-												<Radio value="ROLE_NOTARY">Notary</Radio>
-												<Radio value="ROLE_CITIZEN">Citizen</Radio>
-											</HStack>
-										</RadioGroup>
-									</FormControl>
+								<FormControl as="fieldset" required invalid={!!errors("role")}>
+									<FormLabel for="role">Role</FormLabel>
+									<RadioGroup name="role">
+										<HStack spacing="$4">
+											<Radio value="ROLE_NOTARY">Notary</Radio>
+											<Radio value="ROLE_CITIZEN">Citizen</Radio>
+										</HStack>
+									</RadioGroup>
+									<FormErrorMessage>{errors("role")[0]}</FormErrorMessage>
+								</FormControl>
 
-									<Button colorScheme="success" type="submit">Submit</Button>
-								</VStack>
-							</form>
+								<HStack justifyContent="flex-end">
+									<Button
+										colorScheme="success"
+										type="submit"
+										loading={spinner()}
+										disabled={!isValid()}
+									>	Submit</Button>
+								</HStack>
+							</VStack>
 						</ModalBody>
-
-						<ModalFooter />
 					</ModalContent>
 				</ModalOverlay>
 			</Modal>

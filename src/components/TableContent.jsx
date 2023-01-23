@@ -1,11 +1,14 @@
 import userService from "../services/users";
-import { mergeProps } from "solid-js";
+import { createSignal, mergeProps, Show } from "solid-js";
 
-import { Button, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
+import { Button, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Spinner, Tag, Td, VStack } from "@hope-ui/solid";
 
 function TableContent(props) {
 	const merged = mergeProps({ user: {}, users: null, setUsers: null }, props);
 	const { user } = merged;
+
+	// * TESTING
+	const [spinner, setSpinner] = createSignal(false);
 
 	// ! This is ugly
 	let modals = [];
@@ -14,12 +17,12 @@ function TableContent(props) {
 		modals.push({ isOpen, onOpen, onClose });
 	}
 
-
-
 	// ! Find a better place for handlers and fix the seira
 	const deleteUser = async () => {
+		setSpinner(true);
 		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
 		await userService.deleteUser(user.id);
+		setSpinner(false);
 		merged.setUsers(merged.users().filter(u => u.id !== user.id));
 		// TODO: Spawn Successful Notification
 	};
@@ -81,7 +84,7 @@ function TableContent(props) {
 			return;
 		}
 
-		merged.setUsers(merged.users().map(val => val.id === user.id ? ({...updatedUser, id: val.id}) : val));
+		merged.setUsers(merged.users().map(val => val.id === user.id ? ({ ...updatedUser, id: val.id }) : val));
 
 		// TODO: Spawn notification
 	};
@@ -127,7 +130,9 @@ function TableContent(props) {
 											</p>
 										</ModalBody>
 										<ModalFooter>
-											<Button colorScheme="danger" onClick={deleteUser}>Ναι</Button>
+											<HStack spacing="$4">
+												<Button colorScheme="danger" onClick={deleteUser} loading={spinner()}>Ναι</Button>
+											</HStack>
 										</ModalFooter>
 									</ModalContent>
 								</Modal>
