@@ -1,37 +1,31 @@
+import { Anchor, Box, Button, Center, Container, Divider, HStack, Icon, IconButton, TabList, Tabs } from "@hope-ui/solid";
 import { useNavigate } from "@solidjs/router";
-import { onMount } from "solid-js";
+import { onMount, Show } from "solid-js";
+import Navbar from "../components/Navbar";
 
-import accountService from "../services/account";
+import { useUser } from "../store/user";
 
 function Account(props) {
 	const navigate = useNavigate();
+	const [user, { checkAndSet }] = useUser();
 
 	onMount(async () => {
-		const userToken = JSON.parse(window.sessionStorage.getItem("userToken"));
-		if (!userToken) {
+		checkAndSet();
+		console.log(user);
+		if (!user()) {
 			navigate("/");
 			return;
 		}
-
-		if (userToken.roles.includes("ROLE_ADMIN")) {
+		if (user().user.roles.includes("ROLE_ADMIN")) {
 			navigate("/");
 			return;
-		}
-
-		const accountToken = JSON.parse(window.sessionStorage.getItem("accountToken"));
-		if (!accountToken) {
-			navigate("/account/new");
-			return;
-		} else {
-			accountService.setToken(userToken.accessToken);
-			const account = await accountService.getAccount(userToken.tin);
-			window.sessionStorage.setItem("accountToken", JSON.stringify(account));
-			// setAccount(accountToken);
 		}
 	});
 
 	return (
 		<>
+			<Navbar />
+			<h1>Account Page</h1>
 		</>
 	);
 }

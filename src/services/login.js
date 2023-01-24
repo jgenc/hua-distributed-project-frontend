@@ -17,15 +17,13 @@ const login = async (credentials) => {
 	}
 };
 
-const isUserLoggedIn = () => {
-	const token = window.sessionStorage.getItem("userToken");
-	if (!token) return false;
-	return true;
+const isLoggedIn = () => {
+	return window.sessionStorage.getItem("userToken") !== null;
 };
 
 const logout = () => {
-	
-}
+	window.sessionStorage.removeItem("userToken");
+	window.sessionStorage.removeItem("accountToken");
+};
 
-export { isUserLoggedIn };
-export default { login }; 
+export default { login, logout, isLoggedIn };

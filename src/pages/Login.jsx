@@ -1,17 +1,19 @@
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Button, Center, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
 import { useNavigate } from "@solidjs/router";
-import { createSignal, onMount, Show } from "solid-js";
+import { createSignal, mergeProps, onMount, Show } from "solid-js";
 import accountService from "../services/account";
 import loginService from "../services/login";
+import { useUser } from "../store/user";
+import tokens from "../utils/tokens";
 
 // !!!!!!!!!!!!!!!!!!!!
 // TODO: Update form to be used with felte
 // !!!!!!!!!!!!!!!!!!!!
 
-
 function LoginForm(props) {
 	const [username, setUsername] = createSignal("");
 	const [password, setPassword] = createSignal("");
+	const [user, { login, checkAndSet }] = useUser();
 
 	const [notification, setNotification] = createSignal(false);
 	const [spinner, setSpinner] = createSignal(false);
@@ -19,9 +21,11 @@ function LoginForm(props) {
 	const navigate = useNavigate();
 
 	onMount(() => {
-		const sessionUser = JSON.parse(window.sessionStorage.getItem("userToken"));
-		if (!sessionUser) return;
-		navigate("/");
+		checkAndSet();
+		if (user()) {
+			navigate("/");
+			return;
+		}
 	});
 
 	const handleLogin = async (event) => {
@@ -32,36 +36,29 @@ function LoginForm(props) {
 			password: password()
 		};
 
+
 		setSpinner(true);
-		const userToken = await loginService.login(credentials);
+		await login(credentials);
 		setSpinner(false);
 
 		setUsername("");
 		setPassword("");
 
-		if (!userToken) {
-			console.log("error logging in");
+		if (!user()) {
 			setNotification(true);
 			return;
 		}
 
-		window.sessionStorage.setItem("userToken", JSON.stringify(userToken));
-
-		if (userToken.roles.includes("ROLE_ADMIN")) {
+		if (user().user.roles.includes("ROLE_ADMIN")) {
 			navigate("/admin");
 			return;
 		}
 
-		accountService.setToken(userToken.accessToken);
-		const accountToken = await accountService.getAccount(userToken.tin);
-		if (!accountToken) {
+		if (!user().account.tin !== null) {
 			// Navigate first time user to new account form
 			navigate("/account/new");
 			return;
 		}
-
-		window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
-
 		// Navigate user with account to account
 		navigate("/account");
 	};

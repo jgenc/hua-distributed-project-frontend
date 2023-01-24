@@ -1,50 +1,22 @@
-import { Box, Button, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer } from "@hope-ui/solid";
+import { Anchor, Box, Button, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer } from "@hope-ui/solid";
 import { Link, useNavigate } from "@solidjs/router";
-import { createSignal, onMount, Show } from "solid-js";
-import AdminContent from "../pages/admin/AdminContent";
-
-import accountService from "../services/account";
-
-// TODO: 
-// 			- Display user's account name instead of username
-// 			- 
+import { createEffect, createMemo, createSignal, on, onMount, Show } from "solid-js";
+import { useUser } from "../store/user";
 
 function Navbar(props) {
-	const [account, setAccount] = createSignal(null);
+	const [user, { logout, checkAndSet }] = useUser();
+
 	const navigate = useNavigate();
 
 	onMount(() => {
-		// TODO
-		// Tokens expire. What to do with that???
-		const userToken = JSON.parse(window.sessionStorage.getItem("userToken"));
-		if (!userToken) return;
-
-		if (userToken.roles.includes("ROLE_ADMIN")) {
-			setAccount({
-				firstName: "admin",
-				lastname: ""
-			});
-			return;
-		}
-
-		let accountToken = window.sessionStorage.getItem("accountToken");
-		if (!accountToken) {
-			clearTokens();
-			return;
-		}
-		setAccount(JSON.parse(accountToken));
+		checkAndSet();
 	});
 
-	const clearTokens = () => {
-		window.sessionStorage.removeItem("userToken");
-		window.sessionStorage.removeItem("accountToken");
+	const handleLogout = () => {
+		logout();
 	};
 
-	const handleLogout = () => {
-		clearTokens();
-		setAccount(null);
-		navigate("/");
-	};
+	console.log(user());
 
 	return (
 		<>
@@ -57,11 +29,11 @@ function Navbar(props) {
 				<Spacer />
 				<Box>
 					<HStack spacing="$3">
-						<Show when={account()} fallback={
+						<Show when={user()} fallback={
 							<Button as={Link} href="/login">Log in</Button>
 						}>
 							<p>
-								Καλωσήρθατε, <b>{account().firstName} {account().lastName}</b>
+								Καλωσήρθατε, <b>{user().account.firstName} {user().account.lastName}</b>
 							</p>
 							<Menu>
 								<MenuTrigger as={Button} variant="subtle" colorScheme="info">
@@ -70,14 +42,12 @@ function Navbar(props) {
 								<MenuContent>
 									<MenuGroup>
 										<MenuLabel>Profile</MenuLabel>
-										<MenuItem>My Account</MenuItem>
-										<MenuItem>Payments </MenuItem>
+										<MenuItem onSelect={() => navigate("/account")}>My Account</MenuItem>
 									</MenuGroup>
 									<Divider role="presentation" my="$1" />
 									<MenuGroup>
 										<MenuLabel>Help</MenuLabel>
 										<MenuItem>Docs</MenuItem>
-										<MenuItem>FAQ</MenuItem>
 									</MenuGroup>
 									<Divider role="presentation" my="$1" />
 									<MenuGroup>

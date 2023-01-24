@@ -1,7 +1,3 @@
-const isUserAdmin = (user) => {
-	return user.roles.includes("ROLE_ADMIN")
-		? true
-		: false;
-};
+const getUserRole = (token) => token.roles[0];
 
-export default { isUserAdmin };
+export { getUserRole };

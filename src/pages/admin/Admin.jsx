@@ -1,32 +1,30 @@
 import { useNavigate } from "@solidjs/router";
-import { createSignal, onMount, Show } from "solid-js";
+import { createEffect, createSignal, onMount, Show } from "solid-js";
 import Navbar from "../../components/Navbar";
+import { useUser } from "../../store/user";
 import AdminContent from "./AdminContent";
-
-// TODO: 
-// 			- Check for expired tokens
 
 function AdminPage(props) {
 
-	const [admin, setAdmin] = createSignal(null);
+	const [user, { checkAndSet }] = useUser();
 	const navigate = useNavigate();
 
+	console.log("admin load >> user state: ", user());
+
 	onMount(() => {
-		// Check on initial page load if the browser contains a token
-		const sessionUser = JSON.parse(window.sessionStorage.getItem("userToken"));
-		if (!sessionUser) {
+		checkAndSet();
+		if (!user()) {
 			navigate("/");
 			return;
 		}
-		if (!sessionUser.roles.includes("ROLE_ADMIN")) {
+		if (!user().user.roles.includes("ROLE_ADMIN")) {
 			navigate("/");
 			return;
 		}
-		setAdmin(sessionUser);
 	});
 
 	return (
-		<Show when={admin()} fallback={<h1>404</h1>}>
+		<Show when={user()}>
 			<Navbar />
 			<AdminContent />
 		</Show>
