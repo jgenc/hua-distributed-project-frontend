@@ -4,65 +4,65 @@ import { createEffect, createMemo, createSignal, on, onMount, Show } from "solid
 import { useUser } from "../store/user";
 
 function Navbar(props) {
-	const [user, { logout, checkAndSet }] = useUser();
+  const [user, { logout, checkAndSet }] = useUser();
 
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	onMount(() => {
-		checkAndSet();
-	});
+  onMount(() => {
+    // checkAndSet();
+  });
 
-	const handleLogout = () => {
-		logout();
-	};
+  const handleLogout = () => {
+    logout();
+  };
 
-	console.log(user());
+  console.log("User Info: ", user().account, user().user);
 
-	return (
-		<>
-			<Flex p="$3">
-				<Box p="$2">
-					<Heading as={Link} href="/" size="xl" fontWeight="$bold">
-						Distributed Project
-					</Heading>
-				</Box>
-				<Spacer />
-				<Box>
-					<HStack spacing="$3">
-						<Show when={user()} fallback={
-							<Button as={Link} href="/login">Log in</Button>
-						}>
-							<p>
-								Καλωσήρθατε, <b>{user().account.firstName} {user().account.lastName}</b>
-							</p>
-							<Menu>
-								<MenuTrigger as={Button} variant="subtle" colorScheme="info">
-									Profile
-								</MenuTrigger>
-								<MenuContent>
-									<MenuGroup>
-										<MenuLabel>Profile</MenuLabel>
-										<MenuItem onSelect={() => navigate("/account")}>My Account</MenuItem>
-									</MenuGroup>
-									<Divider role="presentation" my="$1" />
-									<MenuGroup>
-										<MenuLabel>Help</MenuLabel>
-										<MenuItem>Docs</MenuItem>
-									</MenuGroup>
-									<Divider role="presentation" my="$1" />
-									<MenuGroup>
-										<MenuItem colorScheme="danger" onSelect={handleLogout}>Log Out</MenuItem>
-									</MenuGroup>
-								</MenuContent>
-							</Menu>
-						</Show>
-					</HStack>
-				</Box>
-			</Flex>
+  return (
+    <>
+      <Flex p="$3">
+        <Box p="$2">
+          <Heading as={Link} href="/" size="xl" fontWeight="$bold">
+            Distributed Project
+          </Heading>
+        </Box>
+        <Spacer />
+        <Box>
+          <HStack spacing="$3">
+            <Show when={user().account !== undefined} fallback={
+              <Button as={Link} href="/login">Log in</Button>
+            }>
+              <p>
+                Καλωσήρθατε, <b>{user().account.firstName} {user().account.lastName}</b>
+              </p>
+              <Menu>
+                <MenuTrigger as={Button} variant="subtle" colorScheme="info">
+                  Profile
+                </MenuTrigger>
+                <MenuContent>
+                  <MenuGroup>
+                    <MenuLabel>Profile</MenuLabel>
+                    <MenuItem onSelect={() => navigate("/account")}>My Account</MenuItem>
+                  </MenuGroup>
+                  <Divider role="presentation" my="$1" />
+                  <MenuGroup>
+                    <MenuLabel>Help</MenuLabel>
+                    <MenuItem>Docs</MenuItem>
+                  </MenuGroup>
+                  <Divider role="presentation" my="$1" />
+                  <MenuGroup>
+                    <MenuItem colorScheme="danger" onSelect={handleLogout}>Log Out</MenuItem>
+                  </MenuGroup>
+                </MenuContent>
+              </Menu>
+            </Show>
+          </HStack>
+        </Box>
+      </Flex>
 
-			<Divider />
-		</>
-	);
+      <Divider />
+    </>
+  );
 }
 
 export default Navbar;

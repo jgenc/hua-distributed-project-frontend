@@ -6,6 +6,7 @@ import { createSignal, onCleanup, onMount } from "solid-js";
 import { mixed, object, string } from "yup";
 import DoySelect, { doy } from "./DoySelect";
 import accountService from "../services/account";
+import { useUser } from "../store/user";
 
 const schema = object({
 	firstName: string().min(3).max(20).required(),
@@ -17,6 +18,7 @@ const schema = object({
 // ? Maybe rename Account component to AccountForm or something
 function NewAccount(props) {
 	const navigate = useNavigate();
+  const [user, {setAccount}] = useUser();
 	const [spinner, setSpinner] = createSignal(false);
 
 	const { form, errors, isValid, setFields } = createForm({
@@ -27,7 +29,7 @@ function NewAccount(props) {
 			await accountService.newAccount(values);
 			setSpinner(false);
 			// TODO: make helper functions for setting/unsetting tokens
-			window.sessionStorage.setItem("accountToken", JSON.stringify(await accountService.getAccount(JSON.parse(window.sessionStorage.getItem("userToken")).tin)));
+      setAccount();
 			navigate("/");
 		}
 	});

@@ -12,7 +12,7 @@ function Home(props) {
 	return (
 		<>
 			<Navbar />
-			<Show when={user()} fallback={<h1>Welcome to the app, please Log in.</h1>}>
+			<Show when={user().account !== undefined} fallback={<h1>Welcome to the app, please Log in.</h1>}>
 				<Container p="$10	">
 					<Center>
 						<HStack spacing="$4">

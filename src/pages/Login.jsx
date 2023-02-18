@@ -11,9 +11,9 @@ import tokens from "../utils/tokens";
 // !!!!!!!!!!!!!!!!!!!!
 
 function LoginForm(props) {
+	const [user, { login, checkAndSet }] = useUser();
 	const [username, setUsername] = createSignal("");
 	const [password, setPassword] = createSignal("");
-	const [user, { login, checkAndSet }] = useUser();
 
 	const [notification, setNotification] = createSignal(false);
 	const [spinner, setSpinner] = createSignal(false);
@@ -21,8 +21,9 @@ function LoginForm(props) {
 	const navigate = useNavigate();
 
 	onMount(() => {
-		checkAndSet();
-		if (user()) {
+		// checkAndSet();
+    // user already exists, cannot loging again
+		if (user().user !== undefined) {
 			navigate("/");
 			return;
 		}
@@ -35,7 +36,6 @@ function LoginForm(props) {
 			username: username(),
 			password: password()
 		};
-
 
 		setSpinner(true);
 		await login(credentials);
@@ -54,7 +54,7 @@ function LoginForm(props) {
 			return;
 		}
 
-		if (!user().account.tin !== null) {
+		if (user().account === undefined) {
 			// Navigate first time user to new account form
 			navigate("/account/new");
 			return;

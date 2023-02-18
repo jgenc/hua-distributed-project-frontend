@@ -1,66 +1,73 @@
-import { createSignal, createContext, useContext } from "solid-js";
+import { createSignal, createContext, useContext, createEffect, on } from "solid-js";
+import { createStore } from "solid-js/store";
 import loginService from "../services/login";
 import accountService from "../services/account";
+import { loadState, saveState } from "../utils/state";
 
 const UserContext = createContext();
+
+function checkTokens() {
+  let result = 0;
+  const userToken = window.sessionStorage.getItem("userToken");
+  const accountToken = window.sessionStorage.getItem("loginToken");
+
+  if (!accountToken) result = -1;
+  if (!userToken) result = -2;
+  console.log(result);
+  return result;
+}
+
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // 			Find better names
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 export function UserProvider(props) {
-	const [user, setUser] = createSignal(null);
-	const userStore = [user,
-		{
-			async login(credentials) {
-				// Fetch login token
-				const userToken = await loginService.login(credentials);
-				if (!userToken) return;
-				window.sessionStorage.setItem("userToken", JSON.stringify(userToken));
-				setUser({ user: userToken });
+  const [user, setUser] = createSignal(loadState());
+  const userStore = [user,
+    {
+      async login(credentials) {
+        // Fetch login token
+        const userToken = await loginService.login(credentials);
+        // failed login, create notification
+        if (!userToken) return;
+        window.sessionStorage.setItem("userToken", JSON.stringify(userToken));
+        setUser({ ...user(), user: userToken });
+        ;
 
-				// special admin case
-				if (userToken.roles.includes("ROLE_ADMIN")) {
-					setUser({ ...user(), account: { firstName: "admin", lastName: "admin" } });
-					return;
-				}
+        // special admin case
+        if (userToken.roles.includes("ROLE_ADMIN")) {
+          setUser({ ...user(), account: { firstName: "admin", lastName: "" } });
+          saveState(user());
+          return;
+        }
 
-				// Fetch account info if it exists
-				accountService.setToken(userToken.accessToken);
-				const accountToken = await accountService.getAccount(userToken.tin);
-				if (!accountToken) return;
-				window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
-				setUser({ ...user(), account: accountToken });
-			},
-			logout() {
-				loginService.logout();
-				setUser(null);
-			},
-			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			// This was used in the place of a more standard approach, Redux. 
-			// Maybe I will implement state management using redux later.
-			checkAndSet() {
-				if (user()) return;
+        // Fetch account info if it exists
+        accountService.setToken(userToken.accessToken);
+        const accountToken = await accountService.getAccount(userToken.tin);
+        if (!accountToken) return;
+        window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
+        setUser({ ...user(), account: accountToken });
+        saveState(user());
+      },
+      logout() {
+        loginService.logout();
+        setUser({ user: undefined, account: undefined });
+        saveState(undefined);
+      },
+      setAccount(accountToken) {
+        setUser({ ...user(), account: accountToken });
+        window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
+        saveState(user());
+      },
+    }
+  ];
 
-				const userToken = JSON.parse(window.sessionStorage.getItem("userToken"));
-				const accountToken = JSON.parse(window.sessionStorage.getItem("accountToken"));
-
-				if (!userToken) return;
-				if (userToken.roles.includes("ROLE_ADMIN")) {
-					setUser({ user: userToken, account: { firstName: "admin", lastName: "admin" } });
-					return;
-				}
-				if (!accountToken) return;
-				setUser({ user: userToken, account: accountToken });
-			}
-		}
-	];
-
-	return (
-		<UserContext.Provider value={userStore}>
-			{props.children}
-		</UserContext.Provider>
-	);
+  return (
+    <UserContext.Provider value={userStore}>
+      {props.children}
+    </UserContext.Provider>
+  );
 }
 
 export function useUser() { return useContext(UserContext); }

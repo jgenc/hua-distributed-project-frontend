@@ -1,5 +1,6 @@
 import { Route, Routes } from "@solidjs/router";
 import { lazy } from "solid-js";
+import { loadState } from "./utils/state";
 const NewDeclaration = lazy(() => import("./pages/declarations/NewDeclaration"));
 const ShowAllDeclarations = lazy(() => import("./pages/declarations/ShowAllDeclarations"));
 const Home = lazy(() => import("./pages/Home"));

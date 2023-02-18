@@ -15,4 +15,4 @@ render(() =>
 			</UserProvider>
 		</HopeProvider>
 	</Router>
-	, document.getElementById("root"));
+, document.getElementById("root"));

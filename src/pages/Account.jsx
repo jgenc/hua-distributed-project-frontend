@@ -10,9 +10,7 @@ function Account(props) {
 	const [user, { checkAndSet }] = useUser();
 
 	onMount(async () => {
-		checkAndSet();
-		console.log(user);
-		if (!user()) {
+		if (!user().account) {
 			navigate("/");
 			return;
 		}
