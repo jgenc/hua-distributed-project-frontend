@@ -17,7 +17,6 @@ function checkTokens() {
   return result;
 }
 
-
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // 			Find better names
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -35,7 +34,7 @@ export function UserProvider(props) {
         setUser({ ...user(), user: userToken });
         ;
 
-        // special admin case
+        // ! special admin case
         if (userToken.roles.includes("ROLE_ADMIN")) {
           setUser({ ...user(), account: { firstName: "admin", lastName: "" } });
           saveState(user());
@@ -55,9 +54,12 @@ export function UserProvider(props) {
         setUser({ user: undefined, account: undefined });
         saveState(undefined);
       },
-      setAccount(accountToken) {
-        setUser({ ...user(), account: accountToken });
+      async setAccount() {
+       accountService.setToken(userToken.accessToken);
+        const accountToken = await accountService.getAccount(userToken.tin);
+        if (!accountToken) return;
         window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
+        setUser({ ...user(), account: accountToken });
         saveState(user());
       },
     }

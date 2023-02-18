@@ -23,6 +23,7 @@ function App() {
 			</Route>
 			<Route path="/declarations">
 				<Route path="/" component={ShowAllDeclarations} />
+        {/* ! This is dumb */}
 				<Route path="/new" component={NewDeclaration} />
 			</Route>
 		</Routes>
