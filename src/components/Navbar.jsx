@@ -1,16 +1,21 @@
-import { Anchor, Box, Button, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer } from "@hope-ui/solid";
+import { Anchor, Box, Button, Divider, Flex, Heading, HStack, Menu, MenuContent, MenuGroup, MenuItem, MenuLabel, MenuTrigger, Spacer, useColorMode } from "@hope-ui/solid";
 import { Link, useNavigate } from "@solidjs/router";
 import { createEffect, createMemo, createSignal, on, onMount, Show } from "solid-js";
 import { useUser } from "../store/user";
 
+function ColorModeSwitcher() {
+  const { colorMode, toggleColorMode } = useColorMode();
+
+  return (
+    <Button onClick={toggleColorMode}>
+    </Button>
+  );
+}
+
 function Navbar(props) {
   const [user, { logout, checkAndSet }] = useUser();
-
+  const { colorMode, toggleColorMode } = useColorMode();
   const navigate = useNavigate();
-
-  onMount(() => {
-    // checkAndSet();
-  });
 
   const handleLogout = () => {
     logout();
@@ -23,7 +28,7 @@ function Navbar(props) {
       <Flex p="$3">
         <Box p="$2">
           <Heading as={Link} href="/" size="xl" fontWeight="$bold">
-            Distributed Project
+            Δήλωση Φόρου Μεταβίβαση Ακινήτων
           </Heading>
         </Box>
         <Spacer />
@@ -41,13 +46,11 @@ function Navbar(props) {
                 </MenuTrigger>
                 <MenuContent>
                   <MenuGroup>
-                    <MenuLabel>Profile</MenuLabel>
-                    <MenuItem onSelect={() => navigate("/account")}>My Account</MenuItem>
-                  </MenuGroup>
-                  <Divider role="presentation" my="$1" />
-                  <MenuGroup>
                     <MenuLabel>Help</MenuLabel>
-                    <MenuItem>Docs</MenuItem>
+                    <MenuItem as={Link} href="/about">About</MenuItem>
+                    <MenuItem onSelect={toggleColorMode}> 
+                      Toggle {colorMode() === 'light' ? 'dark' : 'light'} mode
+                    </MenuItem>
                   </MenuGroup>
                   <Divider role="presentation" my="$1" />
                   <MenuGroup>

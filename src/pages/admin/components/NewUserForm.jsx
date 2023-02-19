@@ -1,6 +1,6 @@
 import { Box, Button, createDisclosure, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, VStack } from "@hope-ui/solid";
 import { createSignal, mergeProps } from "solid-js";
-import userService from "../services/users";
+import userService from "../../../services/users";
 
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-yup";

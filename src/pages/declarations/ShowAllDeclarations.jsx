@@ -1,4 +1,4 @@
-import { Button, Container, createDisclosure, Divider, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Skeleton, Table, TableCaption, Tbody, Td, Th, Thead, Tr, VStack } from "@hope-ui/solid";
+import { Button, Container, createDisclosure, Divider, HStack, Icon, Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay, Skeleton, Spacer, Table, TableCaption, Tag, Tbody, Td, Th, Thead, Tr, VStack } from "@hope-ui/solid";
 import { createSignal, For, Show } from "solid-js";
 import users from "../../services/users";
 
@@ -12,6 +12,21 @@ import ArrowRight from "../../components/ArrowRight";
 function ShowAllDeclarations() {
   const { isOpen, onClose, onOpen } = createDisclosure();
   const [declarations, setDeclarations] = createSignal([]);
+  const isNotary = tokens.userToken().roles.includes("ROLE_NOTARY");
+
+  const isPurchaser = (purchaserTin) => { return tokens.accountToken().tin === purchaserTin; };
+
+  const typeOfDeclaration = (purchaserTin, sellerTin, notaryTin) => {
+    const tin = tokens.userToken().tin;
+    let types = [];
+    if (tin === purchaserTin)
+      types.push({ type: "Αγορά", color: "info" });
+    if (tin === sellerTin)
+      types.push({ type: "Πώληση", color: "accent" });
+    if (tin === notaryTin)
+      types.push({ type: "Διαχείριση", color: "primary" });
+    return types;
+  };
 
   const handleAllDeclarations = async () => {
     // TODO: What am I fucking doing here
@@ -32,7 +47,7 @@ function ShowAllDeclarations() {
             <ModalCloseButton />
             <ModalHeader>Δηλώσεις</ModalHeader>
             <Divider />
-            <ModalBody>
+            <ModalBody p="$8">
               <Show when={declarations().length > 0} fallback={
                 <VStack alignItems="stretch" spacing="$2">
                   <Skeleton height="30px" />
@@ -42,22 +57,12 @@ function ShowAllDeclarations() {
                 </VStack>
               }>
                 <Table dense highlightOnHover>
-                  <TableCaption>Data of all declarations</TableCaption>
                   <Thead>
                     <Tr>
                       <Th>Id</Th>
                       <Th>Αριθμός Ακίνητου</Th>
-                      {/* <Th>Property Category</Th>
-                      <Th>Property Description</Th>
-                      <Th>Purchaser TIN</Th>
-                      <Th>Seller TIN</Th>
-                      <Th>Notary TIN</Th>
-                      <Th>Tax</Th>
-                      <Th>Payment Method</Th>
-                      <Th>Seller Acceptance</Th>
-                      <Th>Purchaser Acceptance</Th>
-                      <Th>Contract Details</Th> */}
                       <Th>Κατάσταση</Th>
+                      <Th>Τύπος</Th>
                       <Th>Επιλογές</Th>
                     </Tr>
                   </Thead>
@@ -66,17 +71,22 @@ function ShowAllDeclarations() {
                       {(declaration) => <Tr>
                         <Td>{declaration.id}</Td>
                         <Td>{declaration.propertyNumber}</Td>
-                        {/* <Td>{declaration.propertyCategory}</Td>
-                        <Td>{declaration.propertyDescription}</Td>
-                        <Td>{declaration.purchaser.tin}</Td>
-                        <Td>{declaration.seller.tin}</Td>
-                        <Td>{declaration.notary.tin}</Td>
-                        <Td>{declaration.tax}</Td>
-                        <Td>{declaration.paymentMethod}</Td>
-                        <Td>{declaration.sellerAcceptance ? "True" : "False"}</Td>
-                        <Td>{declaration.purchaserAcceptance ? "True" : "False"}</Td>
-                        <Td>{declaration.contractDetails}</Td> */}
-                        <Td>{declaration.status}</Td>
+                        <Td>
+                          <Tag
+                            colorScheme={declaration.status === "completed" ? "success" : "warning"}
+                          >
+                            {declaration.status === "completed" ? "Ολοκληρωμένη" : "Εκκρεμεί"}
+                          </Tag>
+                        </Td>
+                        <Td>
+                          <VStack spacing="$2">
+                            <For each={typeOfDeclaration(declaration.purchaser.tin, declaration.seller.tin, declaration.notary.tin)}>
+                              {res =>
+                                <Tag colorScheme={res.color}>{res.type}</Tag>
+                              }
+                            </For>
+                          </VStack>
+                        </Td>
                         <Td>
                           <ArrowRight id={declaration.id} />
                         </Td>

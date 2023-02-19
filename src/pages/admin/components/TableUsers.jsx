@@ -1,9 +1,9 @@
 import { Table, TableCaption, Tbody, Th, Tr, Thead, Skeleton } from "@hope-ui/solid";
 import { mergeProps, For } from "solid-js";
-import users from "../services/users";
-import UsersTableContent from "./UsersTableContent";
+import users from "../../../services/users";
+import TableContent from "./TableContent";
 
-function UsersTable(props) {
+function TableUsers(props) {
 	const merged = mergeProps({ users: [], setUsers: null }, props);
 
 	return (
@@ -19,11 +19,11 @@ function UsersTable(props) {
 			</Thead>
 			<Tbody>
 				<For each={merged.users()}>
-					{(user) => <UsersTableContent user={user} users={merged.users} setUsers={merged.setUsers} />}
+					{(user) => <TableContent user={user} users={merged.users} setUsers={merged.setUsers} />}
 				</For>
 			</Tbody>
 		</Table>
 	);
 }
 
-export default UsersTable;
+export default TableUsers;

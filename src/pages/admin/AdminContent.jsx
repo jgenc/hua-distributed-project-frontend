@@ -1,8 +1,8 @@
 import userService from "../../services/users";
 import { createSignal, Show } from "solid-js";
 import { Button, Container, HStack, IconButton, Input, VStack } from "@hope-ui/solid";
-import TableUsers from "../../components/TableUsers";
-import NewUserForm from "../../components/NewUserForm";
+import TableUsers from "./components/TableUsers";
+import NewUserForm from "./components/NewUserForm";
 
 import { AiOutlineSearch } from "solid-icons/ai";
 

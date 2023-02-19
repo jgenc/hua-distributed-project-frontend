@@ -4,9 +4,9 @@ import { Button, Center, Container, FormControl, FormErrorMessage, FormLabel, He
 import { useNavigate } from "@solidjs/router";
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { mixed, object, string } from "yup";
-import CSelect from "./CSelect";
-import accountService from "../services/account";
-import { useUser } from "../store/user";
+import CustomSelect from "../../components/CustomSelect";
+import accountService from "../../services/account";
+import { useUser } from "../../store/user";
 
 const doy = [
   "ΑΘΗΝΩΝ Α'",
@@ -132,7 +132,7 @@ function NewAccount(props) {
 
           <FormControl required invalid={!!errors("doy")}>
             <FormLabel for="address">ΔΟΥ</FormLabel>
-            <CSelect
+            <CustomSelect
               setFields={setFields}
               selectList={doy}
               name="doy"

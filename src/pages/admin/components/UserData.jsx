@@ -1,7 +1,7 @@
 import { Container, HStack, Input, VStack, Text, Divider, Center } from "@hope-ui/solid";
 import { mergeProps } from "solid-js";
-import DataCell from "./DataCell";
-import DataWrapper from "./DataWrapper";
+import DataCell from "../../../components/DataCell";
+import DataWrapper from "../../../components/DataWrapper";
 
 function UserData(props) {
   const merged = mergeProps({ user: null, name: null }, props);

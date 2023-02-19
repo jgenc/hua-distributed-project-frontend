@@ -1,7 +1,7 @@
 import { Center, Container, Divider, HStack, VStack } from "@hope-ui/solid";
 import { mergeProps } from "solid-js";
-import DataCell from "./DataCell";
-import DataWrapper from "./DataWrapper";
+import DataCell from "../../../components/DataCell";
+import DataWrapper from "../../../components/DataWrapper";
 
 
 function PropertyData(props) {

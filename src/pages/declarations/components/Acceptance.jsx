@@ -1,9 +1,9 @@
 import { Box, Button, Center, Container, Divider, HStack, Icon, Radio, RadioGroup, SimpleOption, SimpleSelect, Tag, Text, VStack } from "@hope-ui/solid";
 import { createEffect, createSignal, mergeProps } from "solid-js";
-import declarationsService from "../services/declarations";
-import tokens from "../utils/tokens";
-import DataCell from "./DataCell";
-import DataWrapper from "./DataWrapper";
+import declarationsService from "../../../services/declarations";
+import tokens from "../../../utils/tokens";
+import DataCell from "../../../components/DataCell";
+import DataWrapper from "../../../components/DataWrapper";
 
 function Option(props) {
   const merged = mergeProps({ tin: null, acceptance: null, setAcceptance: null, id: null }, props);

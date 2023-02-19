@@ -3,7 +3,7 @@ import { validator } from "@felte/validator-yup";
 import { Anchor, Box, Button, Container, createDisclosure, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack } from "@hope-ui/solid";
 import { createEffect, createSignal } from "solid-js";
 import { mixed, number, object, string } from "yup";
-import CSelect from "../../components/CSelect";
+import CustomSelect from "../../components/CustomSelect";
 import declarationsService from "../../services/declarations";
 import accountService from "../../services/account";
 import FunctionalityButton from "../../components/FunctionalityButton";
@@ -15,16 +15,24 @@ const categories = [
   "Επαγγελματική",
   "Οικόπεδο",
   "Γεωργικά",
-  "HUGE TEXTTTTTTTTTTTTTT"
+];
+
+const rates = [
+  0.05,
+  0.1,
+  0.2,
+  0.25,
+  0.1
 ];
 
 const schema = object({
   propertyNumber: string().min(1).max(5).required(),
+  propertyValue: number().min(500).max(10000000).notRequired(),
   propertyCategory: mixed().oneOf(categories).required(),
   propertyDescription: string().min(10).max(255).required(),
   purchaserTin: string().length(9).required(),
   sellerTin: string().length(9).required(),
-  tax: number().moreThan(0).required(),
+  tax: number()
 });
 
 // TODO: Form checking
@@ -32,12 +40,12 @@ const schema = object({
 function NewDeclaration() {
   const [spinner, setSpinner] = createSignal(false);
   const { isOpen, onOpen, onClose } = createDisclosure();
-  const { form, errors, isValid, setFields } = createForm({
+  const { form, errors, isValid, setFields, setData } = createForm({
     extend: validator({ schema }),
     onSubmit: async values => {
-      console.log("SUBMITTED");
-      setSpinner(true);
+      delete values.propertyValue;
       console.log(values);
+      setSpinner(true);
       declarationsService.setToken(JSON.parse(sessionStorage.getItem("userToken")).accessToken);
       await declarationsService.newDeclaration(values);
       setSpinner(false);
@@ -84,6 +92,17 @@ function NewDeclaration() {
     }
   });
 
+  const [propertyCategory, setPropertyCategory] = createSignal(null);
+  const [propertyValue, setPropertyValue] = createSignal(null);
+  const [tax, setTax] = createSignal(0);
+
+  createEffect(() => {
+    if (!propertyCategory() || !propertyValue())
+      return;
+    setTax(propertyValue() * rates[categories.indexOf(propertyCategory())]);
+    setData("tax", tax());
+  });
+
   return (
     <>
       <FunctionalityButton text="Καινούρια δήλωση" icon={<VsAdd />} onClick={onOpen} />
@@ -111,12 +130,19 @@ function NewDeclaration() {
 
               <FormControl required invalid={!!errors("propertyCategory")}>
                 <FormLabel for="propertyCategory">Κατηγορίας Ακινήτου</FormLabel>
-                <CSelect
+                <CustomSelect
+                  setPropertyCategory={setPropertyCategory}
                   selectList={categories}
                   name="propertyCategory"
                   placeholder="Διάλεξε κατηγορία"
                   setFields={setFields} />
                 <FormErrorMessage>{errors("propertyCategory")[0]}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl required invalid={!!errors("propertyValue")}>
+                <FormLabel for="propertyValue">Αξία Ακινήτου</FormLabel>
+                <Input name="propertyValue" type="number" value={propertyValue()} onChange={(e) => setPropertyValue(e.target.value)}></Input>
+                <FormErrorMessage>{errors("propertyValue")[0]}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("propertyDescription")}>
@@ -130,7 +156,7 @@ function NewDeclaration() {
                 <Input
                   name="purchaserTin"
                   value={purchaserTin()}
-                  onChange={(e) => { setPurchaserTin(e.target.value); }}
+                  onChange={(e) => { setPurchaserTin(e.target.value); setData("purchaserTin", purchaserTin()); }}
                   minLength="9"
                   maxLength="9" />
                 <FormErrorMessage>{purchaserTinError() ? purchaserTinError() : errors("purchaserTin")[0]}</FormErrorMessage>
@@ -141,7 +167,7 @@ function NewDeclaration() {
                 <Input
                   name="sellerTin"
                   value={sellerTin()}
-                  onChange={(e) => { setSellerTin(e.target.value); }}
+                  onChange={(e) => { setSellerTin(e.target.value); setData("sellerTin", sellerTin()); }}
                   minLength="9"
                   maxLength="9" />
                 <FormErrorMessage>{sellerTinError() ? sellerTinError : errors("sellerTin")[0]}</FormErrorMessage>
@@ -150,14 +176,17 @@ function NewDeclaration() {
               <FormControl required invalid={!!errors("tax")}>
                 <FormLabel for="tax">Φόρος</FormLabel>
                 <Input
+                  value={tax()}
                   name="tax"
-                  type="number" />
+                  type="number"
+                  disabled
+                  bg="$blackAlpha8" />
                 <FormErrorMessage>{errors("tax")[0]}</FormErrorMessage>
               </FormControl>
             </ModalBody>
 
             <ModalFooter>
-              <Button type="submit" loading={spinner()} disabled={!isValid()}>Αποθήκευση</Button>
+              <Button type="submit" loading={spinner()} disabled={!isValid() || (sellerTinError() || purchaserTinError())}>Αποθήκευση</Button>
             </ModalFooter>
           </ModalContent>
         </Box>

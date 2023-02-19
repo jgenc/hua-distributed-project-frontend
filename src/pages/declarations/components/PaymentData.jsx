@@ -1,8 +1,8 @@
 import { Button, HStack, Text } from "@hope-ui/solid";
 import { mergeProps } from "solid-js";
-import tokens from "../utils/tokens";
-import DataCell from "./DataCell";
-import DataWrapper from "./DataWrapper";
+import tokens from "../../../utils/tokens";
+import DataCell from "../../../components/DataCell";
+import DataWrapper from "../../../components/DataWrapper";
 
 function Payment(props) {
   const merged = mergeProps({ tax: null, purchaser: null }, props);
@@ -10,7 +10,6 @@ function Payment(props) {
   return (
     <HStack spacing="$3">
       <Text>{merged.tax}€</Text>
-      <Button disabled={disable} colorScheme="success" size="xs">Πληρωμή</Button>
     </HStack>
   );
 }

@@ -14,7 +14,7 @@ function ArrowRight(props) {
   return (
     <Anchor href={`#/declarations/${merged.id}`}>
       <MyButton />
-    </Anchor >
+    </Anchor>
   );
 }
 

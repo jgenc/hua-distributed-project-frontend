@@ -1,9 +1,9 @@
 import { breadcrumbLinkStyles, Button, containerStyles, createDisclosure, Divider, FormControl, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, selectLabelStyles, SimpleOption, SimpleSelect, Textarea, VStack } from "@hope-ui/solid";
 import { createEffect, createSignal, mergeProps, Show } from "solid-js";
-import declarationsService from "../services/declarations";
-import tokens from "../utils/tokens";
-import DataCell from "./DataCell";
-import DataWrapper from "./DataWrapper";
+import declarationsService from "../../../services/declarations";
+import tokens from "../../../utils/tokens";
+import DataCell from "../../../components/DataCell";
+import DataWrapper from "../../../components/DataWrapper";
 
 function CreateContract(props) {
   const merged = mergeProps({ id: null, setContract: null, setPaymentMethod: null, isDeclarationCompleted: null }, props);

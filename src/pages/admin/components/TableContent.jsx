@@ -1,9 +1,9 @@
-import userService from "../services/users";
+import userService from "../../../services/users";
 import { createSignal, mergeProps, Show } from "solid-js";
 
 import { Button, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Spinner, Tag, Td, VStack } from "@hope-ui/solid";
 
-function UsersTableContent(props) {
+function TableContent(props) {
 	const merged = mergeProps({ user: {}, users: null, setUsers: null }, props);
 	const { user } = merged;
 
@@ -214,4 +214,4 @@ function UsersTableContent(props) {
 	);
 }
 
-export default UsersTableContent;
+export default TableContent;

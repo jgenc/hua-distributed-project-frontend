@@ -2,12 +2,12 @@ import { Box, Center, Container, Divider, Heading, HStack, Input, Skeleton, Spin
 import { useBeforeLeave, useNavigate, useParams, useRouteData } from "@solidjs/router";
 import { VsAccount } from "solid-icons/vs";
 import { createEffect, createResource, createSelector, createSignal, onMount, Show, Suspense } from "solid-js";
-import Acceptance from "../../components/Acceptance";
-import CompleteDeclaration from "../../components/CompleteDeclaration";
-import ContractData from "../../components/ContractData";
-import PaymentData from "../../components/PaymentData";
-import PropertyData from "../../components/PropertyData";
-import UserData from "../../components/UserData";
+import Acceptance from "./components/Acceptance";
+import CompleteDeclaration from "./components/CompleteDeclaration";
+import ContractData from "./components/ContractData";
+import PaymentData from "./components/PaymentData";
+import PropertyData from "./components/PropertyData";
+import UserData from "../admin/components/UserData";
 import declarations from "../../services/declarations";
 import { useUser } from "../../store/user";
 import tokens from "../../utils/tokens";
@@ -20,10 +20,12 @@ function Declaration(props) {
   const navigate = useNavigate();
   const [isDeclarationCompleted, setisDeclarationCompleted] = createSignal(false);
 
+
   createEffect(() => {
     if (declaration.state === "ready") {
       setisDeclarationCompleted(declaration().sellerAcceptance
         && declaration().purchaserAcceptance);
+      console.log(declaration());
     }
   });
 
@@ -50,10 +52,11 @@ function Declaration(props) {
           borderRadius="$lg"
           overflow="hidden" >
 
-          <Center>
-            <Heading size="2xl">Δήλωση {declaration().id}</Heading>
-          </Center>
-
+          <Container p="$1">
+            <Center>
+              <Text size="2xl">Δήλωση {declaration().id}</Text>
+            </Center>
+          </Container>
           <Divider />
 
           <Container>
@@ -88,8 +91,8 @@ function Declaration(props) {
               <Divider />
             </Show>
 
-            {/* <PaymentData name="Στοιχεία Πληρωμής" tax={declaration().tax} purchaser={declaration().purchaser} /> */}
-{/* 
+            <PaymentData name="Στοιχεία Φόρου" tax={declaration().tax} purchaser={declaration().purchaser} />
+            {/* 
             <Show when={isDeclarationCompleted()}>
               <CompleteDeclaration />
             </Show> */}
