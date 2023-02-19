@@ -32,7 +32,6 @@ function AdminPage(props) {
 
 	return (
 		<Show when={user().user}>
-			<Navbar />
 			<AdminContent />
 		</Show>
 	);

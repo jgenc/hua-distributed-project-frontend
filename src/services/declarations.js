@@ -29,6 +29,21 @@ const getDeclarations = async () => {
   }
 };
 
+const getDeclarationById = async (id) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: token
+      }
+    };
+    const response = await axios.get(baseUrl + `/${id}`, config);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
 const newDeclaration = async (declarationObect) => {
   try {
     const config = {
@@ -44,4 +59,20 @@ const newDeclaration = async (declarationObect) => {
   }
 };
 
-export default { setToken, getDeclarations, newDeclaration };
+const acceptDeclaration = async (id) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: token
+      }
+    };
+    const response = await axios.post(baseUrl + `/accept/${id}`, {}, config);
+    console.log(response);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export default { setToken, getDeclarations, newDeclaration, getDeclarationById, acceptDeclaration };

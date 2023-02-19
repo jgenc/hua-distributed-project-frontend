@@ -59,8 +59,8 @@ function LoginForm(props) {
 			navigate("/account/new");
 			return;
 		}
-		// Navigate user with account to account
-		navigate("/account");
+		// Navigate user to main app 
+		navigate("/");
 	};
 
 	return (

@@ -6,17 +6,20 @@ import { mixed, number, object, string } from "yup";
 import CSelect from "../../components/CSelect";
 import declarationsService from "../../services/declarations";
 import accountService from "../../services/account";
+import FunctionalityButton from "../../components/FunctionalityButton";
+import { VsAdd } from "solid-icons/vs";
 
 const categories = [
   "Διαμέρισμα",
   "Μονοκατοικία",
-  "Επαγγελματική Στέγη",
-  "Οικόπεδο ακάλυπτο",
-  "Γεωργικά κτίρια",
+  "Επαγγελματική",
+  "Οικόπεδο",
+  "Γεωργικά",
+  "HUGE TEXTTTTTTTTTTTTTT"
 ];
 
 const schema = object({
-  propertyNumber: string().length(9).required(),
+  propertyNumber: string().min(1).max(5).required(),
   propertyCategory: mixed().oneOf(categories).required(),
   propertyDescription: string().min(10).max(255).required(),
   purchaserTin: string().length(9).required(),
@@ -40,6 +43,9 @@ function NewDeclaration() {
       setSpinner(false);
       onClose();
     },
+    onError: async error => {
+      console.log(error);
+    }
   });
 
   const [purchaserTin, setPurchaserTin] = createSignal("");
@@ -79,7 +85,7 @@ function NewDeclaration() {
 
   return (
     <>
-      <Anchor onClick={onOpen}>+</Anchor>
+      <FunctionalityButton text="Καινούρια δήλωση" icon={<VsAdd />} onClick={onOpen} />
       <Modal
         opened={isOpen()}
         onClose={onClose}
@@ -97,8 +103,8 @@ function NewDeclaration() {
                 <FormLabel for="propertyNumber">Αριθμός Ακινήτου</FormLabel>
                 <Input
                   name="propertyNumber"
-                  minLength="9"
-                  maxLength="9" />
+                  minLength="1"
+                  maxLength="5" />
                 <FormErrorMessage>{errors("propertyNumber")[0]}</FormErrorMessage>
               </FormControl>
 
