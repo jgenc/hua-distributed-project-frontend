@@ -1,4 +1,4 @@
-import { Box, Button, Center, Container, Divider, HStack, Icon, Radio, RadioGroup, SimpleOption, SimpleSelect, Text, VStack } from "@hope-ui/solid";
+import { Box, Button, Center, Container, Divider, HStack, Icon, Radio, RadioGroup, SimpleOption, SimpleSelect, Tag, Text, VStack } from "@hope-ui/solid";
 import { createEffect, createSignal, mergeProps } from "solid-js";
 import declarationsService from "../services/declarations";
 import tokens from "../utils/tokens";
@@ -6,20 +6,18 @@ import DataCell from "./DataCell";
 import DataWrapper from "./DataWrapper";
 
 function Option(props) {
-  const merged = mergeProps({ tin: null, acceptance: null, id: null }, props);
-  const [acceptance, setAcceptance] = createSignal(merged.acceptance);
-  const disable = tokens.accountToken().tin !== merged.tin ||
-    (acceptance() !== null && !acceptance());
+  const merged = mergeProps({ tin: null, acceptance: null, setAcceptance: null, id: null }, props);
+  const [disableButton, setDisableButton] = createSignal(tokens.accountToken().tin !== merged.tin || merged.acceptance() === null || merged.acceptance());
 
   const [spinner, setSpinner] = createSignal(false);
   const handleAcceptance = async () => {
     setSpinner(true);
-    console.log(tokens.userToken().accessToken)
     declarationsService.setToken(tokens.userToken().accessToken);
     await declarationsService.acceptDeclaration(merged.id);
     setSpinner(false);
+    merged.setAcceptance(true);
+    setDisableButton(true);
   };
-
 
   return (
     <Center>
@@ -32,7 +30,7 @@ function Option(props) {
         </RadioGroup> */}
         <Button
           loading={spinner()}
-          disabled={disable}
+          disabled={disableButton()}
           onClick={handleAcceptance}
           size="xs" >
           Αποδοχή
@@ -42,15 +40,28 @@ function Option(props) {
   );
 }
 
+function Status(props) {
+  const merged = mergeProps({ acceptance: null }, props);
+
+  return (
+    <Center>
+      <Tag colorScheme={merged.acceptance() ? "success" : "danger"}>
+        {merged.acceptance() ? "Αποδεκτή" : "Μη αποδεκτή"}
+      </Tag>
+    </Center>
+  );
+}
+
 function Acceptance(props) {
   const merged = mergeProps({ name: null, user: null, acceptance: null, id: null }, props);
-  console.log("accept:", merged.acceptance);
+  const [acceptance, setAcceptance] = createSignal(merged.acceptance);
   return (
     <DataWrapper name={`Υποβολή Δήλωσης ${merged.name}`}>
       <HStack>
         <DataCell name="ΑΦΜ" value={merged.user.tin} />
         <DataCell name="Όνομα" value={merged.user.firstName} />
-        <DataCell name="Υποβολή" customRow={<Option tin={merged.user.tin} acceptance={merged.user.acceptance} id={merged.id} />} />
+        <DataCell name="Υποβολή" customRow={<Option tin={merged.user.tin} acceptance={acceptance} setAcceptance={setAcceptance} id={merged.id} />} />
+        <DataCell name="Κατάσταση" customRow={<Status acceptance={acceptance} />} />
       </HStack>
     </DataWrapper>
   );

@@ -55,14 +55,14 @@ function NewDeclaration() {
 
   createEffect(async () => {
     if (purchaserTin().length === 9) {
-      console.log("Checking purchaser TIN... length: ", purchaserTin());
       // check if tin exists
+      setPurchaserTinError("Checking TIN...");
       accountService.setToken(JSON.parse(sessionStorage.getItem("userToken")).accessToken);
       const actualTin = await accountService.getAccount(purchaserTin());
       if (!actualTin) {
-        // TODO: print a message to the user that the tin does not exist
-        setPurchaserTinError("Purchaser TIN does not exist.");
-        console.log(purchaserTinError());
+        setPurchaserTinError("TIN does not exist.");
+      } else {
+        setPurchaserTinError("");
       }
     } else if (purchaserTin().length < 9 && purchaserTinError()) {
       setPurchaserTinError("");
@@ -71,12 +71,13 @@ function NewDeclaration() {
 
   createEffect(async () => {
     if (sellerTin().length === 9) {
-      console.log("Checking seller TIN... length: ", sellerTin());
+      setSellerTinError("Checking TIN...");
       accountService.setToken(JSON.parse(sessionStorage.getItem("userToken")).accessToken);
       const actualTin = await accountService.getAccount(sellerTin());
       if (!actualTin) {
-        // TODO: print a message to the user that the tin does not exist
-        setSellerTinError("Seller TIN does not exist.");
+        setSellerTinError("TIN does not exist.");
+      } else {
+        setSellerTinError("");
       }
     } else if (sellerTin().length < 9 && sellerTinError()) {
       setSellerTinError("");

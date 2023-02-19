@@ -1,8 +1,9 @@
 import { Box, Center, Container, Divider, Heading, HStack, Input, Skeleton, Spinner, Text, VStack } from "@hope-ui/solid";
 import { useBeforeLeave, useNavigate, useParams, useRouteData } from "@solidjs/router";
 import { VsAccount } from "solid-icons/vs";
-import { createEffect, createResource, onMount, Show, Suspense } from "solid-js";
+import { createEffect, createResource, createSelector, createSignal, onMount, Show, Suspense } from "solid-js";
 import Acceptance from "../../components/Acceptance";
+import CompleteDeclaration from "../../components/CompleteDeclaration";
 import ContractData from "../../components/ContractData";
 import PaymentData from "../../components/PaymentData";
 import PropertyData from "../../components/PropertyData";
@@ -15,9 +16,16 @@ function Declaration(props) {
   const params = useParams();
   declarations.setToken(tokens.userToken().accessToken);
   const [declaration] = createResource(() => params.id, declarations.getDeclarationById);
-
   const [user, { _ }] = useUser();
   const navigate = useNavigate();
+  const [isDeclarationCompleted, setisDeclarationCompleted] = createSignal(false);
+
+  createEffect(() => {
+    if (declaration.state === "ready") {
+      setisDeclarationCompleted(declaration().sellerAcceptance
+        && declaration().purchaserAcceptance);
+    }
+  });
 
   createEffect(() => {
     if (!user().user) {
@@ -75,10 +83,16 @@ function Declaration(props) {
               id={params.id} />
             <Divider />
 
-            <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contractDetails} />
-            <Divider />
+            <Show when={isDeclarationCompleted()}>
+              <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contractDetails} paymentMethod={declaration().paymentMethod} id={params.id} />
+              <Divider />
+            </Show>
 
-            <PaymentData name="Στοιχεία Πληρωμής" tax={declaration().tax} purchaser={declaration().purchaser} />
+            {/* <PaymentData name="Στοιχεία Πληρωμής" tax={declaration().tax} purchaser={declaration().purchaser} /> */}
+{/* 
+            <Show when={isDeclarationCompleted()}>
+              <CompleteDeclaration />
+            </Show> */}
           </Container>
         </VStack>
       </Center>

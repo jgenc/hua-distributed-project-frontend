@@ -67,7 +67,6 @@ const acceptDeclaration = async (id) => {
       }
     };
     const response = await axios.post(baseUrl + `/accept/${id}`, {}, config);
-    console.log(response);
     return response.data;
   } catch (e) {
     console.log(e);
@@ -75,4 +74,19 @@ const acceptDeclaration = async (id) => {
   }
 };
 
-export default { setToken, getDeclarations, newDeclaration, getDeclarationById, acceptDeclaration };
+const completeDeclaration = async (id, contractObject) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: token
+      }
+    };
+    const response = await axios.post(baseUrl + `/complete/${id}`, contractObject, config);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export default { setToken, getDeclarations, newDeclaration, getDeclarationById, acceptDeclaration, completeDeclaration };
