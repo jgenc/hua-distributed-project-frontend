@@ -68,11 +68,9 @@ const createUser = async (user) => {
 			}
 		};
 		const response = await axios.post(baseUrl, user, config);
-
 		return response.data.message.split("id:")[1];
 	} catch (e) {
-		console.log(e);
-		return null;
+		return e;
 	}
 };
 
@@ -104,10 +102,9 @@ const updateUser = async (id, updatedUserObject) => {
 			}
 		};
 		const response = await axios.put(baseUrl.concat(`/${id}`), updatedUserObject, config);
-		return response.data;
+    return response.data;
 	} catch (e) {
-		console.log(e);
-		return null;
+    return e;
 	}
 };
 

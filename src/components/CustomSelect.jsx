@@ -6,6 +6,8 @@ function CustomSelect(props) {
 
   const handler = (value) => {
     merged.setFields(merged.name, value);
+    if (!merged.setPropertyCategory)
+      return;
     merged.setPropertyCategory(value);
   };
 

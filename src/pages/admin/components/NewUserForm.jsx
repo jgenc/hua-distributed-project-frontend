@@ -5,6 +5,7 @@ import userService from "../../../services/users";
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-yup";
 import { mixed, object, string } from "yup";
+import createNotification from "../../../utils/notification";
 
 const schema = object({
   username: string().min(3).max(30).required(),
@@ -25,10 +26,15 @@ function NewUserForm(props) {
       const id = await userService.createUser(newUser);
       setSpinner(false);
 
-      if (!id) return;
+      if (id.name === "AxiosError") {
+        console.log(id);
+        createNotification("danger", "Σφάλμα", id.response.data.message);
+        return;
+      }
       merged.setUsers([...merged.users(), { ...newUser, id }]);
       onClose();
-    },
+      createNotification("success", "Επιτυχής Προσθήκη Χρήστη");
+    }
   });
 
   const [spinner, setSpinner] = createSignal(false);

@@ -1,6 +1,5 @@
 import { Table, TableCaption, Tbody, Th, Tr, Thead, Skeleton } from "@hope-ui/solid";
 import { mergeProps, For } from "solid-js";
-import users from "../../../services/users";
 import TableContent from "./TableContent";
 
 function TableUsers(props) {

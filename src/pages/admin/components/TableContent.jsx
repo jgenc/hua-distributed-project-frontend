@@ -1,217 +1,215 @@
+import { createSignal, mergeProps } from "solid-js";
 import userService from "../../../services/users";
-import { createSignal, mergeProps, Show } from "solid-js";
 
-import { Button, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Spinner, Tag, Td, VStack } from "@hope-ui/solid";
+import { Button, Container, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
+import createNotification from "../../../utils/notification";
+import tokens from "../../../utils/tokens";
 
 function TableContent(props) {
-	const merged = mergeProps({ user: {}, users: null, setUsers: null }, props);
-	const { user } = merged;
+  const merged = mergeProps({ user: null, users: null, setUsers: null }, props);
+  const [role, setRole] = createSignal(merged.user.role);
+  const [spinner, setSpinner] = createSignal(false);
 
-	// * TESTING
-	const [spinner, setSpinner] = createSignal(false);
+  const modalDelete = createDisclosure();
+  const modalUpdateInfo = createDisclosure();
+  const modalUpdatePassword = createDisclosure();
 
-	// ! This is ugly
-	let modals = [];
-	for (let i = 0; i < 5; i++) {
-		const { isOpen, onOpen, onClose } = createDisclosure();
-		modals.push({ isOpen, onOpen, onClose });
-	}
+  // ! Find a better place for handlers and fix the seira
+  const deleteUser = async () => {
+    setSpinner(true);
+    userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+    await userService.deleteUser(merged.user.id);
+    setSpinner(false);
+    merged.setUsers(merged.users().filter(u => u.id !== merged.user.id));
+    createNotification("success", "Διαγραφή Χρήστη Επιτυχής!");
+  };
 
-	// ! Find a better place for handlers and fix the seira
-	const deleteUser = async () => {
-		setSpinner(true);
-		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-		await userService.deleteUser(user.id);
-		setSpinner(false);
-		merged.setUsers(merged.users().filter(u => u.id !== user.id));
-		// TODO: Spawn Successful Notification
-	};
+  const changePassword = async (event) => {
+    event.preventDefault();
 
-	const changePassword = async (event) => {
-		event.preventDefault();
+    const newPassword = event.target[0].value;
+    const newPasswordConfirm = event.target[1].value;
 
-		const newPassword = event.target[0].value;
-		const newPasswordConfirm = event.target[1].value;
+    if (newPassword !== newPasswordConfirm) {
+      // TODO: Spawn notification
+      console.log("pwds not the same");
+      return;
+    }
 
-		if (newPassword !== newPasswordConfirm) {
-			// TODO: Spawn notification
-			console.log("pwds not the same");
-			return;
-		}
+    userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+    await userService.changePassword(merged.user.id, newPassword);
 
-		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-		await userService.changePassword(user.id, newPassword);
+  };
 
-		// TODO: Spawn successful notification
+  const changeInformation = async (event) => {
+    event.preventDefault();
 
-	};
+    const newUsername = event.target[0].value;
+    const newTin = event.target[1].value;
+    const newRole = event.target[2].value;
 
-	const changeInformation = async (event) => {
-		event.preventDefault();
+    // !!!!!!!!!!!!!!!!!!!!!!
+    // TODO: Form VALIDATION 
+    // !!!!!!!!!!!!!!!!!!!!!!
+    // Check if values have changed
+    if (newUsername === merged.user.username) {
+      // return;
+    }
 
-		const newUsername = event.target[0].value;
-		const newTin = event.target[1].value;
-		const newRole = event.target[2].value;
+    if (newTin === merged.user.tin) {
+      // return;
+    }
 
-		// !!!!!!!!!!!!!!!!!!!!!!
-		// TODO: Form VALIDATION 
-		// !!!!!!!!!!!!!!!!!!!!!!
-		// Check if values have changed
-		if (newUsername === user.username) {
-			// return;
-		}
+    if (newRole === merged.user.role) {
+      // return;
+    }
 
-		if (newTin === user.tin) {
-			// return;
-		}
+    const updatedUser = {
+      username: newUsername,
+      tin: newTin,
+      role: role()
+    };
 
-		if (newRole === user.role) {
-			// return;
-		}
+    console.log(updatedUser);
 
-		const updatedUser = {
-			username: newUsername,
-			tin: newTin,
-			role: newRole
-		};
+    userService.setToken(tokens.userToken().accessToken);
+    const result = await userService.updateUser(merged.user.id, updatedUser);
 
-		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-		const result = await userService.updateUser(user.id, updatedUser);
+    console.log(result);
 
-		if (!result) {
-			// TODO: Spawn notification
-			console.log("error in backend");
-			return;
-		}
+    merged.setUsers(merged.users().map(val => val.id === merged.user.id ? ({ ...updatedUser, id: val.id }) : val));
+    createNotification("success", "Επιτυχής αλλαγή στοιχείων χρήστη");
+  };
 
-		merged.setUsers(merged.users().map(val => val.id === user.id ? ({ ...updatedUser, id: val.id }) : val));
+  return (
+    <tr>
+      <Td>{merged.user.id}</Td>
+      <Td>{merged.user.username}</Td>
+      <Td>{merged.user.tin}</Td>
+      <Td>
+        <Container>
+          <HStack spacing="$3">
 
-		// TODO: Spawn notification
-	};
+            <Tag
+              size="md"
+              colorScheme={merged.user.role === "ROLE_ADMIN" ? "danger" : "primary"}
+            >{merged.user.role}</Tag>
 
-	return (
-		<tr>
-			<Td>{user.id}</Td>
-			<Td>{user.username}</Td>
-			<Td>{user.tin}</Td>
-			<Td>
-				<Flex>
-					<Tag
-						size="md"
-						colorScheme={user.role === "ROLE_ADMIN" ? "danger" : "primary"}
-					>{user.role}</Tag>
+            <Spacer />
 
-					<Spacer />
+            <Menu>
+              <MenuTrigger
+                as={Button}
+                variant="subtle"
+                colorScheme="neutral"
+                rightIcon=""
+              >
+                Επιλογές
+              </MenuTrigger>
+              <MenuContent>
+                <MenuItem
+                  colorScheme="danger"
+                  onSelect={() => modalDelete.onOpen()}
+                  disabled={merged.user.role === "ROLE_ADMIN"}
+                >
+                  Διαγραφή
+                </MenuItem>
+                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={merged.user.role === "ROLE_ADMIN"}>
+                  Αλλαγή Στοιχείων
+                </MenuItem>
+                <MenuItem onSelect={() => modalUpdatePassword.onOpen()}>
+                  Αλλαγή Κωδικού
+                </MenuItem>
+              </MenuContent>
+            </Menu>
 
-					<Menu>
-						<MenuTrigger
-							as={Button}
-							variant="subtle"
-							colorScheme="neutral"
-							rightIcon=""
-						>
-							Επιλογές
-						</MenuTrigger>
-						<MenuContent>
-							<MenuItem
-								colorScheme="danger"
-								onSelect={() => modals[0].onOpen()}
-								disabled={user.role === "ROLE_ADMIN"}
-							>
-								Διαγραφή
-								<Modal opened={modals[0].isOpen()} onClose={() => modals[0].onClose()}>
-									<ModalOverlay />
-									<ModalContent>
-										<ModalCloseButton />
-										<ModalHeader>Επιβεβαίωση</ModalHeader>
-										<ModalBody>
-											<p>
-												Είστε σίγουρος ότι θέλετε να διαγράψετε τον χρήστη <b>{user.username}</b> από το σύστημα;
-											</p>
-										</ModalBody>
-										<ModalFooter>
-											<HStack spacing="$4">
-												<Button colorScheme="danger" onClick={deleteUser} loading={spinner()}>Ναι</Button>
-											</HStack>
-										</ModalFooter>
-									</ModalContent>
-								</Modal>
-							</MenuItem>
+            {/* Hacky fix, modals under menu items will cause the children to rerender. Don't know if it's the library's error or mine */}
 
-							<MenuItem onSelect={() => modals[1].onOpen()} disabled={user.role === "ROLE_ADMIN"}>
-								Αλλαγή Στοιχείων
-								<Modal opened={modals[1].isOpen()} onClose={() => modals[1].onClose()}>
-									<ModalOverlay />
-									<ModalContent>
-										<ModalCloseButton />
-										<ModalHeader>Αλλαγή Στοιχείων Χρήστη <b>{user.username}</b></ModalHeader>
-										<ModalBody>
-											<form onSubmit={changeInformation}>
-												<VStack spacing="$4" alignItems="stretch">
-													<FormControl>
-														<FormLabel>Username</FormLabel>
-														<Input value={user.username} minLength="3" maxLength="20" />
-													</FormControl>
+            <Modal opened={modalDelete.isOpen()} onClose={modalDelete.onClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalCloseButton />
+                <ModalHeader>Επιβεβαίωση</ModalHeader>
+                <ModalBody>
+                  <p>
+                    Είστε σίγουρος ότι θέλετε να διαγράψετε τον χρήστη <b>{merged.user.username}</b> από το σύστημα;
+                  </p>
+                </ModalBody>
+                <ModalFooter>
+                  <HStack spacing="$4">
+                    <Button colorScheme="danger" onClick={deleteUser} loading={spinner()}>Ναι</Button>
+                  </HStack>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
 
-													<FormControl>
-														<FormLabel>TIN</FormLabel>
-														<Input value={user.tin} minLength="9" maxLength="9" />
-													</FormControl>
+            <Modal opened={modalUpdateInfo.isOpen()} onClose={() => modalUpdateInfo.onClose()}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalCloseButton />
+                <ModalHeader>Αλλαγή Στοιχείων Χρήστη <b>{merged.user.username}</b></ModalHeader>
+                <ModalBody>
+                  <form onSubmit={changeInformation}>
+                    <VStack spacing="$3" alignItems="stretch">
+                      <FormControl>
+                        <FormLabel>Username</FormLabel>
+                        <Input value={merged.user.username} minLength="2" maxLength="20" />
+                      </FormControl>
 
-													<FormControl>
-														<RadioGroup>
-															<HStack spacing="$4">
-																<Radio value="ROLE_NOTARY">Notary</Radio>
-																<Radio value="ROLE_CITIZEN">Citizen</Radio>
-															</HStack>
-														</RadioGroup>
-													</FormControl>
+                      <FormControl>
+                        <FormLabel>TIN</FormLabel>
+                        <Input value={merged.user.tin} minLength="8" maxLength="9" />
+                      </FormControl>
 
-													<HStack justifyContent="flex-end">
-														<Button type="submit" colorScheme="success">Αλλαγή</Button>
-													</HStack>
-												</VStack>
-											</form>
-										</ModalBody>
-									</ModalContent>
-								</Modal>
-							</MenuItem>
+                      <FormControl>
+                        <RadioGroup name="role">
+                          <HStack spacing="$3">
+                            <Radio defaultChecked={role() === "ROLE_NOTARY"} value="ROLE_NOTARY" onChange={(e) => setRole(e.target.value)}>Notary</Radio>
+                            <Radio defaultChecked={role() === "ROLE_CITIZEN"} value="ROLE_CITIZEN" onChange={(e) => setRole(e.target.value)}>Citizen</Radio>
+                          </HStack>
+                        </RadioGroup>
+                      </FormControl>
 
-							<MenuItem onSelect={() => modals[2].onOpen()}>
-								Αλλαγή Κωδικού
-								<Modal opened={modals[2].isOpen()} onClose={() => modals[2].onClose()}>
-									<ModalOverlay />
-									<ModalContent>
-										<ModalCloseButton />
-										<ModalHeader>Αλλαγή Κωδικού</ModalHeader>
-										<ModalBody>
-											<form onSubmit={changePassword}>
-												<VStack spacing="$4" alignItems="stretch">
-													<FormControl required >
-														<FormLabel>Καινούριος Κωδικός</FormLabel>
-														<Input type="password" minLength="8" />
-													</FormControl>
-													<FormControl required >
-														<FormLabel>Επαλήθευση Κωδικού</FormLabel>
-														<Input type="password" minLength="8" />
-													</FormControl>
+                      <HStack justifyContent="flex-end">
+                        <Button type="submit" colorScheme="success">Αλλαγή</Button>
+                      </HStack>
+                    </VStack>
+                  </form>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
 
-													<HStack justifyContent="flex-end">
-														<Button type="submit" colorScheme="success">Αλλαγή</Button>
-													</HStack>
-												</VStack>
-											</form>
-										</ModalBody>
-									</ModalContent>
-								</Modal>
-							</MenuItem>
+            <Modal opened={modalUpdatePassword.isOpen()} onClose={() => modalUpdatePassword.onClose()}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalCloseButton />
+                <ModalHeader>Αλλαγή Κωδικού</ModalHeader>
+                <ModalBody>
+                  <form onSubmit={changePassword}>
+                    <VStack spacing="$4" alignItems="stretch">
+                      <FormControl required >
+                        <FormLabel>Καινούριος Κωδικός</FormLabel>
+                        <Input type="password" minLength="8" />
+                      </FormControl>
+                      <FormControl required >
+                        <FormLabel>Επαλήθευση Κωδικού</FormLabel>
+                        <Input type="password" minLength="8" />
+                      </FormControl>
 
-						</MenuContent>
-					</Menu>
-				</Flex>
-			</Td>
-		</tr>
-	);
+                      <HStack justifyContent="flex-end">
+                        <Button type="submit" colorScheme="success">Αλλαγή</Button>
+                      </HStack>
+                    </VStack>
+                  </form>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
+
+          </HStack>
+        </Container>
+      </Td>
+    </tr >
+  );
 }
 
 export default TableContent;

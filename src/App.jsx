@@ -1,6 +1,5 @@
 import { Route, Routes } from "@solidjs/router";
 import { lazy } from "solid-js";
-import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 const NewDeclaration = lazy(() => import("./pages/declarations/NewDeclaration"));
 const ShowAllDeclarations = lazy(() => import("./pages/declarations/ShowAllDeclarations"));
@@ -31,7 +30,6 @@ function App() {
           <Route path="/new" component={NewDeclaration} />
         </Route>
       </Routes>
-      {/* <Footer /> */}
     </>
   );
 }

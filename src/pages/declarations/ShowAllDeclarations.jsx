@@ -7,6 +7,7 @@ import tokens from "../../utils/tokens";
 import FunctionalityButton from "../../components/FunctionalityButton";
 import { VsSearch } from "solid-icons/vs";
 import ArrowRight from "../../components/ArrowRight";
+import createNotification from "../../utils/notification";
 
 
 function ShowAllDeclarations() {
@@ -29,10 +30,21 @@ function ShowAllDeclarations() {
   };
 
   const handleAllDeclarations = async () => {
-    // TODO: What am I fucking doing here
     onOpen();
     declarationsService.setToken(tokens.userToken().accessToken);
-    setDeclarations(await declarationsService.getDeclarations());
+    const res = await declarationsService.getDeclarations();
+    console.log(res);
+    if (res.name === "AxiosError") {
+      createNotification("danger", "Σφάλμα συστήματος, παρακαλώ δοκιμάστε αργότερα");
+      onClose();
+      return;
+    }
+    if (res.length === 0) {
+      createNotification("danger", "Δεν βρέθηκαν δηλώσεις");
+      onClose();
+      return;
+    }
+    setDeclarations(res);
   };
 
   return (
@@ -40,7 +52,8 @@ function ShowAllDeclarations() {
       <FunctionalityButton
         text="Όλες οι δηλώσεις"
         icon={<VsSearch />}
-        onClick={handleAllDeclarations} />
+        onClick={handleAllDeclarations}
+      />
       <Modal size="xl" opened={isOpen()} onClose={onClose}>
         <ModalOverlay>
           <ModalContent>

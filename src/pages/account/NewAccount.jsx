@@ -7,6 +7,8 @@ import { mixed, object, string } from "yup";
 import CustomSelect from "../../components/CustomSelect";
 import accountService from "../../services/account";
 import { useUser } from "../../store/user";
+import createNotification from "../../utils/notification";
+import tokens from "../../utils/tokens";
 
 const doy = [
   "ΑΘΗΝΩΝ Α'",
@@ -35,7 +37,7 @@ const schema = object({
 // ? Maybe rename Account component to AccountForm or something
 function NewAccount(props) {
   const navigate = useNavigate();
-  const [user, { setAccount }] = useUser();
+  const [user, { setAccount, logout }] = useUser();
   const [spinner, setSpinner] = createSignal(false);
 
   const { form, errors, isValid, setFields } = createForm({
@@ -47,8 +49,12 @@ function NewAccount(props) {
       setSpinner(false);
       // TODO: make helper functions for setting/unsetting tokens
       // TODO: Test If the account token is saved corecctly
-      setAccount();
+      await setAccount();
       navigate("/");
+    },
+    onError: (e) => {
+      console.log(e);
+      createNotification("danger", "Σφάλμα στο σύστημα", "Παρακαλώ δοκιμάστε αργότερα");
     }
   });
 
@@ -57,39 +63,32 @@ function NewAccount(props) {
     // Check if token corresponds to an account
     // If it exists, redirect user to Home
     // If it does not, proceed to Account Creation
+    const userToken = tokens.userToken();
 
-    const userToken = JSON.parse(window.sessionStorage.getItem("userToken"));
-    if (userToken.roles.includes("ROLE_ADMIN")) {
-      // Admin cannot create an account
-      navigate("/");
-      return;
-    }
     if (!userToken) {
       // User not logged in
       navigate("/");
       return;
     }
-    const accountToken = JSON.parse(window.sessionStorage.getItem("accountToken"));
-    if (accountToken) {
-      navigate("/account");
+    if (userToken.roles.includes("ROLE_ADMIN")) {
+      // Admin cannot create an account
+      navigate("/");
       return;
     }
-
-    // accountService.setToken(userToken.accessToken);
-    // const existingAccount = await accountService.getAccount(userToken.tin);
-    // if (existingAccount) {
-    // 	navigate("/");
-    // 	return;
-    // }
-
-    // I assume that the backend CANNOT create a user with a role other than:
-    // ROLE_NOTARY or ROLE_CITIZEN
-
+    // If account already exists, go to home
+    const accountToken = tokens.accountToken();
+    if (accountToken) {
+      navigate("/");
+      return;
+    }
   });
 
-  // !!!!!!!!!!!!!!!!!!!
-  // TODO: Should check if CITIZEN or NOTARY is creating an account. Different approach
-  // !!!!!!!!!!!!!!!!!!!
+  onCleanup(() => {
+    // If user leaves for some reason, cleanup tokens
+    if (!tokens.accountToken()) {
+      logout();
+    }
+  });
 
   return (
     <Center h="$xl">
@@ -139,7 +138,7 @@ function NewAccount(props) {
               placeholder="Διάλεξε ΔΟΥ" />
             <FormErrorMessage>{errors("doy")[0]}</FormErrorMessage>
           </FormControl>
-      
+
           <HStack justifyContent="flex-end">
             <Button type="submit" colorScheme="success" disabled={!isValid()} loading={spinner()}>Δημιουργία</Button>
           </HStack>

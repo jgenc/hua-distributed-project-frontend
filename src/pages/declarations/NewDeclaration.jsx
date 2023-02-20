@@ -8,6 +8,7 @@ import declarationsService from "../../services/declarations";
 import accountService from "../../services/account";
 import FunctionalityButton from "../../components/FunctionalityButton";
 import { VsAdd } from "solid-icons/vs";
+import createNotification from "../../utils/notification";
 
 const categories = [
   "Διαμέρισμα",
@@ -49,6 +50,7 @@ function NewDeclaration() {
       declarationsService.setToken(JSON.parse(sessionStorage.getItem("userToken")).accessToken);
       await declarationsService.newDeclaration(values);
       setSpinner(false);
+      createNotification("success", "Επιτυχής δημιουργία καινούριας δήλωσης!");
       onClose();
     },
     onError: async error => {
