@@ -25,7 +25,6 @@ function App() {
           <Route path="/new" component={NewAccount} />
         </Route>
         <Route path="/declarations">
-          <Route path="/" component={ShowAllDeclarations} />
           <Route path="/:id" component={Declaration} />
           <Route path="/new" component={NewDeclaration} />
         </Route>
