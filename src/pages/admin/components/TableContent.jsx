@@ -30,6 +30,7 @@ function TableContent(props) {
     const newPassword = event.target[0].value;
     const newPasswordConfirm = event.target[1].value;
 
+
     if (newPassword !== newPasswordConfirm) {
       // TODO: Spawn notification
       console.log("pwds not the same");
@@ -38,6 +39,8 @@ function TableContent(props) {
 
     userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
     await userService.changePassword(merged.user.id, newPassword);
+
+    modalUpdatePassword.onClose();
 
   };
 

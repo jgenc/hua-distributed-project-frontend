@@ -27,7 +27,6 @@ function NewUserForm(props) {
       setSpinner(false);
 
       if (id.name === "AxiosError") {
-        console.log(id);
         createNotification("danger", "Σφάλμα", id.response.data.message);
         return;
       }

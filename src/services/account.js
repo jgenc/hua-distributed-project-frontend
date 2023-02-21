@@ -24,7 +24,7 @@ const newAccount = async (accountObject) => {
 		return response.data;
 	} catch (e) {
 		console.log(e);
-		return null;
+		return e;
 	}
 };
 
@@ -35,11 +35,11 @@ const getAccount = async (tin) => {
 				Authorization: token
 			}
 		};
-		const response = await axios.get(baseUrl.concat(`/${tin}`), config);
+		const response = await axios.get(baseUrl + `/${tin}`, config);
+		console.log(response);
 		return response.data;
 	} catch (e) {
-		console.log(e);
-		return null;
+		return e;
 	}
 };
 

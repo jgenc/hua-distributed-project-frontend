@@ -47,18 +47,15 @@ function NewAccount(props) {
       accountService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
       const accountToken = await accountService.newAccount(values);
       setSpinner(false);
+      console.log(accountToken);
       // TODO: make helper functions for setting/unsetting tokens
       // TODO: Test If the account token is saved corecctly
       await setAccount();
       navigate("/");
-    },
-    onError: (e) => {
-      console.log(e);
-      createNotification("danger", "Σφάλμα στο σύστημα", "Παρακαλώ δοκιμάστε αργότερα");
     }
   });
 
-  onMount(async () => {
+  onMount(() => {
     // See if user is logged In
     // Check if token corresponds to an account
     // If it exists, redirect user to Home
@@ -77,6 +74,7 @@ function NewAccount(props) {
     }
     // If account already exists, go to home
     const accountToken = tokens.accountToken();
+    console.log(accountToken);
     if (accountToken) {
       navigate("/");
       return;

@@ -3,6 +3,7 @@ import { createStore } from "solid-js/store";
 import loginService from "../services/login";
 import accountService from "../services/account";
 import { loadState, saveState } from "../utils/state";
+import tokens from "../utils/tokens";
 
 const UserContext = createContext();
 
@@ -32,7 +33,7 @@ export function UserProvider(props) {
         if (!userToken) return;
         window.sessionStorage.setItem("userToken", JSON.stringify(userToken));
         setUser({ ...user(), user: userToken });
-        ;
+        
 
         // ! special admin case
         if (userToken.roles.includes("ROLE_ADMIN")) {
@@ -44,7 +45,10 @@ export function UserProvider(props) {
         // Fetch account info if it exists
         accountService.setToken(userToken.accessToken);
         const accountToken = await accountService.getAccount(userToken.tin);
-        if (!accountToken) return;
+        if (accountToken.name === "AxiosError") {
+          console.log("error on setting account token");
+          return;
+        }
         window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
         setUser({ ...user(), account: accountToken });
         saveState(user());
@@ -55,8 +59,9 @@ export function UserProvider(props) {
         saveState(undefined);
       },
       async setAccount() {
-       accountService.setToken(userToken.accessToken);
-        const accountToken = await accountService.getAccount(userToken.tin);
+        accountService.setToken(tokens.userToken().accessToken);
+        const accountToken = await accountService.getAccount(tokens.userToken().tin);
+        console.log(accountToken);
         if (!accountToken) return;
         window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
         setUser({ ...user(), account: accountToken });
