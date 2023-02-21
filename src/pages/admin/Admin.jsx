@@ -12,8 +12,8 @@ function AdminPage(props) {
 	console.log("admin load >> user state: ", user());
 
 	onMount(() => {
-		checkAndSet();
-		if (!user()) {
+		// checkAndSet();
+		if (user().user === undefined) {
 			navigate("/");
 			return;
 		}
@@ -23,9 +23,15 @@ function AdminPage(props) {
 		}
 	});
 
+	createEffect(() => {
+		if (user().user === undefined) {
+			navigate("/");
+			return;
+		}
+	})
+
 	return (
-		<Show when={user()}>
-			<Navbar />
+		<Show when={user().user}>
 			<AdminContent />
 		</Show>
 	);

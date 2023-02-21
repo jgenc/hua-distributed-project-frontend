@@ -1,10 +1,12 @@
 import userService from "../../services/users";
 import { createSignal, Show } from "solid-js";
 import { Button, Container, HStack, IconButton, Input, VStack } from "@hope-ui/solid";
-import TableUsers from "../../components/TableUsers";
-import NewUserForm from "../../components/NewUserForm";
+import TableUsers from "./components/TableUsers";
+import NewUserForm from "./components/NewUserForm";
 
 import { AiOutlineSearch } from "solid-icons/ai";
+import tokens from "../../utils/tokens";
+import createNotification from "../../utils/notification";
 
 function AdminContent(props) {
 	let allUsers = [];
@@ -13,11 +15,11 @@ function AdminContent(props) {
 
 	const handleShowAllUsers = async () => {
 		setSpinner(true);
-		userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
+		userService.setToken(tokens.userToken().accessToken);
 		const result = await userService.users();
 		setSpinner(false);
-		if (!result) {
-			console.log("error retrieving all users");
+		if (result.name === "AxiosError") {
+      createNotification("warning", "Σφάλμα", result.response.data.message);
 			return;
 		}
 		setUsers(result.sort((a, b) => a.id - b.id));
@@ -26,6 +28,7 @@ function AdminContent(props) {
 
 	const handleSearchUsers = async (event) => {
 		event.preventDefault();
+    console.log("Searching users");
 		const searchValue = document.getElementById("search").value;
 
 		if (allUsers.length === 0) await handleShowAllUsers();
@@ -37,6 +40,7 @@ function AdminContent(props) {
 	return (
 		<Container p="$3">
 			<VStack spacing="$10">
+
 				<HStack spacing="$5" height="$10">
 					<HStack spacing="$3">
 						<Input id="search" onChange={handleSearchUsers} />
@@ -47,9 +51,10 @@ function AdminContent(props) {
 					<NewUserForm users={users} setUsers={setUsers} />
 				</HStack>
 
-				<Show when={users().length !== 0}>
+				<Show when={users().length > 0}>
 					<TableUsers users={users} setUsers={setUsers} />
 				</Show>
+
 			</VStack>
 		</Container>
 	);

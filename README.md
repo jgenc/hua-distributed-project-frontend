@@ -1,5 +1,9 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/0dd75e06-5cf4-45e5-aaab-e820cc985c06/deploy-status)](https://app.netlify.com/sites/bejewelled-sherbet-209a57/deploys)
 
+## Deployment
+
+[Site](https://bejewelled-sherbet-209a57.netlify.app/#/)
+
 ## Usage
 
 Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnpm up -Lri`.
