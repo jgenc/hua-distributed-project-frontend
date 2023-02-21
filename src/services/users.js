@@ -68,7 +68,8 @@ const createUser = async (user) => {
 			}
 		};
 		const response = await axios.post(baseUrl, user, config);
-		return response.data.message.split("id:")[1];
+		console.log(response);
+		return response.data;
 	} catch (e) {
 		return e;
 	}
