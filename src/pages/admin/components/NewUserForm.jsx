@@ -7,6 +7,8 @@ import { validator } from "@felte/validator-yup";
 import { mixed, object, string } from "yup";
 import createNotification from "../../../utils/notification";
 
+import { accessToken } from "../../../utils/tokens";
+
 const schema = object({
   username: string().min(3).max(30).required(),
   password: string().min(8).max(30).required(),
@@ -22,15 +24,15 @@ function NewUserForm(props) {
     extend: validator({ schema }),
     onSubmit: async newUser => {
       setSpinner(true);
-      userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-      const id = await userService.createUser(newUser);
+      userService.setToken(accessToken());
+      const result = await userService.createUser(newUser);
       setSpinner(false);
 
-      if (id.name === "AxiosError") {
+      if (result.name === "AxiosError") {
         createNotification("danger", "Σφάλμα", id.response.data.message);
         return;
       }
-      merged.setUsers([...merged.users(), { ...newUser, id }]);
+      merged.setUsers([...merged.users(), { ...result }]);
       onClose();
       createNotification("success", "Επιτυχής Προσθήκη Χρήστη");
     }

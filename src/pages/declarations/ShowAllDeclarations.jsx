@@ -3,7 +3,7 @@ import { createSignal, For, Show } from "solid-js";
 import users from "../../services/users";
 
 import declarationsService from "../../services/declarations";
-import tokens from "../../utils/tokens";
+import { accessToken } from "../../utils/tokens";
 import FunctionalityButton from "../../components/FunctionalityButton";
 import { VsSearch } from "solid-icons/vs";
 import ArrowRight from "../../components/ArrowRight";
@@ -13,7 +13,6 @@ import createNotification from "../../utils/notification";
 function ShowAllDeclarations() {
   const { isOpen, onClose, onOpen } = createDisclosure();
   const [declarations, setDeclarations] = createSignal([]);
-  const isNotary = tokens.userToken().roles.includes("ROLE_NOTARY");
 
   const isPurchaser = (purchaserTin) => { return tokens.accountToken().tin === purchaserTin; };
 

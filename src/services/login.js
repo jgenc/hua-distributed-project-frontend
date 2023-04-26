@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const apiUrl = "/api/auth/signin";
-let baseUrl = "http://localhost:8080";
+const apiUrl = "/api/auth/login";
+let baseUrl = "http://localhost:8000";
 const backendUrl = import.meta.env.VITE_SOLID_BACKEND;
 baseUrl = backendUrl
   ? backendUrl.concat(apiUrl)
@@ -9,7 +9,12 @@ baseUrl = backendUrl
 
 const login = async (credentials) => {
   try {
-    const response = await axios.post(baseUrl, credentials);
+    const headers = {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    };
+    const response = await axios.post(baseUrl, credentials, headers);
     return response.data;
   } catch (e) {
     console.log(e);

@@ -17,7 +17,7 @@ function AdminPage(props) {
 			navigate("/");
 			return;
 		}
-		if (!user().user.roles.includes("ROLE_ADMIN")) {
+		if (!user().user.admin) {
 			navigate("/");
 			return;
 		}

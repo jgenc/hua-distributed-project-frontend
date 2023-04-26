@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiUrl = "/api/declaration";
-let baseUrl = "http://localhost:8080";
+let baseUrl = "http://localhost:8000";
 const backendUrl = import.meta.env.VITE_SOLID_BACKEND;
 baseUrl = backendUrl
   ? backendUrl.concat(apiUrl)

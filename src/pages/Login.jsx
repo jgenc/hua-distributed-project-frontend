@@ -35,8 +35,6 @@ function LoginForm(props) {
     await login(credentials);
     setSpinner(false);
 
-    console.log("error");
-
     setUsername("");
     setPassword("");
 
@@ -45,7 +43,7 @@ function LoginForm(props) {
       return;
     }
 
-    if (user().user.roles.includes("ROLE_ADMIN")) {
+    if (user().user.admin) {
       navigate("/admin");
       return;
     }

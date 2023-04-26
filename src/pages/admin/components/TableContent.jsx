@@ -3,11 +3,11 @@ import userService from "../../../services/users";
 
 import { Button, Container, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
 import createNotification from "../../../utils/notification";
-import tokens from "../../../utils/tokens";
+import { accessToken } from "../../../utils/tokens";
 
 function TableContent(props) {
   const merged = mergeProps({ user: null, users: null, setUsers: null }, props);
-  const [role, setRole] = createSignal(merged.user.role);
+  const [role, setRole] = createSignal(merged.user.role || merged.user.role.name);
   const [spinner, setSpinner] = createSignal(false);
 
   const modalDelete = createDisclosure();
@@ -17,8 +17,8 @@ function TableContent(props) {
   // ! Find a better place for handlers and fix the seira
   const deleteUser = async () => {
     setSpinner(true);
-    userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-    await userService.deleteUser(merged.user.id);
+    userService.setToken(accessToken());
+    await userService.deleteUser(merged.user.tin);
     setSpinner(false);
     merged.setUsers(merged.users().filter(u => u.id !== merged.user.id));
     createNotification("success", "Διαγραφή Χρήστη Επιτυχής!");
@@ -37,11 +37,10 @@ function TableContent(props) {
       return;
     }
 
-    userService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
-    await userService.changePassword(merged.user.id, newPassword);
+    userService.setToken(accessToken());
+    await userService.changePassword(merged.user.tin, newPassword);
 
     modalUpdatePassword.onClose();
-
   };
 
   const changeInformation = async (event) => {
@@ -49,23 +48,8 @@ function TableContent(props) {
 
     const newUsername = event.target[0].value;
     const newTin = event.target[1].value;
-    const newRole = event.target[2].value;
 
-    // !!!!!!!!!!!!!!!!!!!!!!
     // TODO: Form VALIDATION 
-    // !!!!!!!!!!!!!!!!!!!!!!
-    // Check if values have changed
-    if (newUsername === merged.user.username) {
-      // return;
-    }
-
-    if (newTin === merged.user.tin) {
-      // return;
-    }
-
-    if (newRole === merged.user.role) {
-      // return;
-    }
 
     const updatedUser = {
       username: newUsername,
@@ -73,14 +57,30 @@ function TableContent(props) {
       role: role()
     };
 
-    console.log(updatedUser);
+    // Check if values have changed
+    if (newUsername === merged.user.username) {
+      delete updatedUser.username;
+    }
 
-    userService.setToken(tokens.userToken().accessToken);
-    const result = await userService.updateUser(merged.user.id, updatedUser);
+    if (newTin === merged.user.tin) {
+      delete updatedUser.tin;
+    }
+
+    if (role() == merged.user.role) {
+      delete updatedUser.role;
+    }
+
+    userService.setToken(accessToken());
+    const result = await userService.updateUser(merged.user.tin, updatedUser);
 
     console.log(result);
 
-    merged.setUsers(merged.users().map(val => val.id === merged.user.id ? ({ ...updatedUser, id: val.id }) : val));
+    merged.setUsers(merged.users().map(
+      val => val.id === merged.user.id ?
+        ({ ...val, ...updatedUser}) :
+        val
+    ));
+    console.log(merged.users())
     createNotification("success", "Επιτυχής αλλαγή στοιχείων χρήστη");
   };
 
@@ -95,8 +95,8 @@ function TableContent(props) {
 
             <Tag
               size="md"
-              colorScheme={merged.user.role === "ROLE_ADMIN" ? "danger" : "primary"}
-            >{merged.user.role}</Tag>
+              colorScheme={merged.user.role.name === "ROLE_ADMIN" ? "danger" : "primary"}
+            >{merged.user.role.name}</Tag>
 
             <Spacer />
 
@@ -113,11 +113,11 @@ function TableContent(props) {
                 <MenuItem
                   colorScheme="danger"
                   onSelect={() => modalDelete.onOpen()}
-                  disabled={merged.user.role === "ROLE_ADMIN"}
+                  disabled={merged.user.role.name === "ROLE_ADMIN"}
                 >
                   Διαγραφή
                 </MenuItem>
-                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={merged.user.role === "ROLE_ADMIN"}>
+                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={merged.user.role.name === "ROLE_ADMIN"}>
                   Αλλαγή Στοιχείων
                 </MenuItem>
                 <MenuItem onSelect={() => modalUpdatePassword.onOpen()}>

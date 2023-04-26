@@ -36,7 +36,7 @@ function Home(props) {
         <Container p="$10	">
           <Center>
             <HStack spacing="$4">
-              <Show when={user().user.roles.includes("ROLE_NOTARY")}>
+              <Show when={user().user.notary}>
                 <NewDeclaration />
               </Show>
               <ShowAllDeclarations />
