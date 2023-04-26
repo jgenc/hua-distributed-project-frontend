@@ -1,6 +1,17 @@
-const parseToken = (token) => JSON.parse(window.sessionStorage.getItem(token));
+import jwtDecode from "jwt-decode";
 
-const userToken = () => parseToken("userToken");
-const accountToken = () => parseToken("accountToken");
+export const decodeToken = (token) => jwtDecode(token);
 
-export default { userToken, accountToken };
+export const accessToken = () => JSON.parse(window.sessionStorage.getItem("access_token"));
+
+export const removeToken = () => window.sessionStorage.removeItem("access_token");
+
+
+// New token
+// {
+//     "username": "admin",
+//     "tin": "0",
+//     "admin": true,
+//     "notary": false,
+//     "exp": 1681503337
+// }
