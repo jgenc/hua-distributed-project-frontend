@@ -86,7 +86,7 @@ function Declaration(props) {
               id={params.id} />
             <Divider />
 
-            <Show when={isDeclarationCompleted()}>
+            <Show when={isDeclarationCompleted() && user().roles.includes("ROLE_NOTARY")}>
               <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contractDetails} paymentMethod={declaration().paymentMethod} id={params.id} />
               <Divider />
             </Show>
