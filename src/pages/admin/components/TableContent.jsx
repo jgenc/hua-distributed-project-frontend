@@ -7,7 +7,7 @@ import { accessToken } from "../../../utils/tokens";
 
 function TableContent(props) {
   const merged = mergeProps({ user: null, users: null, setUsers: null }, props);
-  const [role, setRole] = createSignal(merged.user.role || merged.user.role.name);
+  const [role, setRole] = createSignal(merged.user.role);
   const [spinner, setSpinner] = createSignal(false);
 
   const modalDelete = createDisclosure();
@@ -77,7 +77,8 @@ function TableContent(props) {
 
     merged.setUsers(merged.users().map(
       val => val.id === merged.user.id ?
-        ({ ...val, ...updatedUser}) :
+        // TODO: Fix this, it's a hacky way to update the role
+        ({ ...val, ...updatedUser }) :
         val
     ));
     console.log(merged.users())
@@ -95,8 +96,8 @@ function TableContent(props) {
 
             <Tag
               size="md"
-              colorScheme={merged.user.role.name === "ROLE_ADMIN" ? "danger" : "primary"}
-            >{merged.user.role.name}</Tag>
+              colorScheme={merged.user.role === "ROLE_ADMIN" ? "danger" : "primary"}
+            >{merged.user.role}</Tag>
 
             <Spacer />
 
@@ -113,11 +114,11 @@ function TableContent(props) {
                 <MenuItem
                   colorScheme="danger"
                   onSelect={() => modalDelete.onOpen()}
-                  disabled={merged.user.role.name === "ROLE_ADMIN"}
+                  disabled={merged.user.role === "ROLE_ADMIN"}
                 >
                   Διαγραφή
                 </MenuItem>
-                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={merged.user.role.name === "ROLE_ADMIN"}>
+                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={merged.user.role === "ROLE_ADMIN"}>
                   Αλλαγή Στοιχείων
                 </MenuItem>
                 <MenuItem onSelect={() => modalUpdatePassword.onOpen()}>

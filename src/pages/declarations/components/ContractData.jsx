@@ -1,7 +1,7 @@
 import { breadcrumbLinkStyles, Button, containerStyles, createDisclosure, Divider, FormControl, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, selectLabelStyles, SimpleOption, SimpleSelect, Textarea, VStack } from "@hope-ui/solid";
 import { createEffect, createSignal, mergeProps, Show } from "solid-js";
 import declarationsService from "../../../services/declarations";
-import tokens from "../../../utils/tokens";
+import { accessToken, accountToken, decodeToken } from "../../../utils/tokens";
 import DataCell from "../../../components/DataCell";
 import DataWrapper from "../../../components/DataWrapper";
 
@@ -29,7 +29,7 @@ function CreateContract(props) {
       contractDetails: contract(),
       paymentMethod: select()
     };
-    declarationsService.setToken(tokens.userToken().accessToken);
+    declarationsService.setToken(accessToken());
     await declarationsService.completeDeclaration(merged.id, contractObject);
     setSpinner(false);
     merged.setContract(contract());
@@ -75,15 +75,15 @@ function CreateContract(props) {
 
 function translatePayment(method) {
   let translated = "";
-  switch(method) {
+  switch (method) {
     case "cash":
-      translated = "Μετρητά"
+      translated = "Μετρητά";
       break;
     case "check":
-      translated = "Επιταγή"
+      translated = "Επιταγή";
       break;
     case "card":
-      translated = "Κάρτα"
+      translated = "Κάρτα";
       break;
   }
   return translated;
@@ -93,7 +93,7 @@ function ContractData(props) {
   const merged = mergeProps({ name: null, contract: null, paymentMethod: null, id: null }, props);
   const [contract, setContract] = createSignal(merged.contract);
   const [paymentMethod, setPaymentMethod] = createSignal(merged.paymentMethod);
-  const isNotary = tokens.userToken().roles.includes("ROLE_NOTARY");
+  const isNotary = decodeToken(accessToken()).notary;
   const isDeclarationCompleted = paymentMethod() && contract();
 
   return (

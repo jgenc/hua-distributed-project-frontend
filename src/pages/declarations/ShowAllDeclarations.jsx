@@ -3,7 +3,7 @@ import { createSignal, For, Show } from "solid-js";
 import users from "../../services/users";
 
 import declarationsService from "../../services/declarations";
-import { accessToken } from "../../utils/tokens";
+import { accessToken, accountToken } from "../../utils/tokens";
 import FunctionalityButton from "../../components/FunctionalityButton";
 import { VsSearch } from "solid-icons/vs";
 import ArrowRight from "../../components/ArrowRight";
@@ -17,7 +17,7 @@ function ShowAllDeclarations() {
   const isPurchaser = (purchaserTin) => { return tokens.accountToken().tin === purchaserTin; };
 
   const typeOfDeclaration = (purchaserTin, sellerTin, notaryTin) => {
-    const tin = tokens.userToken().tin;
+    const tin = accountToken().tin;
     let types = [];
     if (tin === purchaserTin)
       types.push({ type: "Αγορά", color: "info" });
@@ -30,7 +30,7 @@ function ShowAllDeclarations() {
 
   const handleAllDeclarations = async () => {
     onOpen();
-    declarationsService.setToken(tokens.userToken().accessToken);
+    declarationsService.setToken(accessToken());
     const res = await declarationsService.getDeclarations();
     console.log(res);
     if (res.name === "AxiosError") {
@@ -92,7 +92,7 @@ function ShowAllDeclarations() {
                         </Td>
                         <Td>
                           <VStack spacing="$2">
-                            <For each={typeOfDeclaration(declaration.purchaser.tin, declaration.seller.tin, declaration.notary.tin)}>
+                            <For each={typeOfDeclaration(declaration.purchaser_tin, declaration.seller_tin, declaration.notary_tin)}>
                               {res =>
                                 <Tag colorScheme={res.color}>{res.type}</Tag>
                               }

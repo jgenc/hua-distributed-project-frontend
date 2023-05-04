@@ -9,9 +9,9 @@ function PropertyData(props) {
   return (
     <DataWrapper name="Στοιχεία Ακινήτου">
       <HStack>
-        <DataCell name="Αριθμός Ακινήτου" value={merged.property.number} />
-        <DataCell name="Κατηγορία Ακινήτου" value={merged.property.category} />
-        <DataCell name="Περιγραφή Ακινήτου" value={merged.property.description} />
+        <DataCell name="Αριθμός Ακινήτου" value={merged.property_number} />
+        <DataCell name="Κατηγορία Ακινήτου" value={merged.property_category} />
+        <DataCell name="Περιγραφή Ακινήτου" value={merged.property_description} />
       </HStack>
     </DataWrapper>
   );

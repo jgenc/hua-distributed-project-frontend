@@ -1,18 +1,18 @@
 import { Box, Button, Center, Container, Divider, HStack, Icon, Radio, RadioGroup, SimpleOption, SimpleSelect, Tag, Text, VStack } from "@hope-ui/solid";
 import { createEffect, createSignal, mergeProps } from "solid-js";
 import declarationsService from "../../../services/declarations";
-import tokens from "../../../utils/tokens";
+import { accessToken, accountToken } from "../../../utils/tokens";
 import DataCell from "../../../components/DataCell";
 import DataWrapper from "../../../components/DataWrapper";
 
 function Option(props) {
   const merged = mergeProps({ tin: null, acceptance: null, setAcceptance: null, id: null }, props);
-  const [disableButton, setDisableButton] = createSignal(tokens.accountToken().tin !== merged.tin || merged.acceptance() === null || merged.acceptance());
+  const [disableButton, setDisableButton] = createSignal(accountToken().tin !== merged.tin || merged.acceptance() === null || merged.acceptance());
 
   const [spinner, setSpinner] = createSignal(false);
   const handleAcceptance = async () => {
     setSpinner(true);
-    declarationsService.setToken(tokens.userToken().accessToken);
+    declarationsService.setToken(accessToken);
     await declarationsService.acceptDeclaration(merged.id);
     setSpinner(false);
     merged.setAcceptance(true);

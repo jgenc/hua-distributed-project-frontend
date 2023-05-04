@@ -10,11 +10,11 @@ import PropertyData from "./components/PropertyData";
 import UserData from "../admin/components/UserData";
 import declarations from "../../services/declarations";
 import { useUser } from "../../store/user";
-import tokens from "../../utils/tokens";
+import { accessToken } from "../../utils/tokens";
 
 function Declaration(props) {
   const params = useParams();
-  declarations.setToken(tokens.userToken().accessToken);
+  declarations.setToken(accessToken());
   const [declaration] = createResource(() => params.id, declarations.getDeclarationById);
   const [user, { _ }] = useUser();
   const navigate = useNavigate();
