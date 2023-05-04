@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useUser } from "../store/user";
-import { removeToken } from "../utils/tokens";
+import { removeTokens } from "../utils/tokens";
 import { useNavigate } from "@solidjs/router";
 
 const apiUrl = "/api/admin/user";
@@ -39,7 +39,7 @@ const users = async () => {
   } catch (e) {
     if (e.response.status == 401) {
       console.log("Unauthorized");
-      removeToken();
+      removeTokens();
       // FIXME:
       sessionStorage.removeItem("session");
       return null;

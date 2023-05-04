@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "/api/person";
+const apiUrl = "/api/persons";
 let baseUrl = "http://localhost:8000";
 const backendUrl = import.meta.env.VITE_SOLID_BACKEND;
 baseUrl = backendUrl
@@ -36,7 +36,6 @@ const getAccount = async (tin) => {
 			}
 		};
 		const response = await axios.get(baseUrl + `/${tin}`, config);
-		console.log(response);
 		return response.data;
 	} catch (e) {
 		return e;

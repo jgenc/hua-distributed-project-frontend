@@ -22,9 +22,4 @@ const login = async (credentials) => {
   }
 };
 
-const logout = () => {
-  window.sessionStorage.removeItem("userToken");
-  window.sessionStorage.removeItem("accountToken");
-};
-
-export default { login, logout };
+export default { login };

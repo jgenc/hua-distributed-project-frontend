@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 import loginService from "../services/login";
 import accountService from "../services/account";
 import { loadState, saveState } from "../utils/state";
-import { decodeToken } from "../utils/tokens";
+import { accessToken, decodeToken, removeTokens } from "../utils/tokens";
 
 const UserContext = createContext();
 
@@ -29,35 +29,46 @@ export function UserProvider(props) {
 
         // failed login, create notification
         if (!tokenData) return;
+
         window.sessionStorage.setItem("access_token", JSON.stringify(loginResponse.access_token));
-        setUser({ ...user(), user: tokenData });
+        setUser({ user: tokenData });
+        saveState(user());
 
         // ! special admin case
         if (tokenData.admin) {
           // if (userToken.roles.includes("ROLE_ADMIN")) {
-          setUser({ ...user(), account: { firstName: "admin", lastName: "" } });
+          setUser({ ...user(), account: { firstName: "Admin", lastName: "" } });
           saveState(user());
           return;
         }
 
         // Fetch account info if it exists
-        // accountService.setToken(userToken.accessToken);
-        // const accountToken = await accountService.getAccount(userToken.tin);
-        // if (accountToken.name === "AxiosError") {
-        //   console.log("error on setting account token");
-        //   return;
-        // }
-        // window.sessionStorage.setItem("accountToken", JSON.stringify(accountToken));
-        // setUser({ ...user(), account: accountToken });
-        // saveState(user());
+        accountService.setToken(accessToken());
+        const accountToken = await accountService.getAccount(user().user.tin);
+        console.log("Token from trying to access account: ", accountToken);
+        if (accountToken.name === "AxiosError") {
+          console.log("error on setting account token");
+          return;
+        }
+        window.sessionStorage.setItem("account_token", JSON.stringify(accountToken));
+        setUser({ ...user(), account: accountToken });
+        saveState(user());
       },
       logout() {
-        loginService.logout();
+        removeTokens();
         setUser({ user: undefined, account: undefined });
         saveState(undefined);
       },
-      async setAccount() {
-        accountService.setToken(tokens.userToken().accessToken);
+      async setAccount(account_token) {
+        // TODO: Rewrite
+
+        if (account_token) {
+          setUser({ ...user(), account: account_token });
+          saveState(user());
+          return;
+        }
+
+        accountService.setToken(accessToken());
         const accountToken = await accountService.getAccount(tokens.userToken().tin);
         console.log(accountToken);
         if (!accountToken) return;

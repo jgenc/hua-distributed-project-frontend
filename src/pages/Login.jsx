@@ -48,7 +48,7 @@ function LoginForm(props) {
       return;
     }
 
-    if (user().account === undefined) {
+    if (!user().account) {
       // Navigate first time user to new account form
       navigate("/account/new");
       return;
