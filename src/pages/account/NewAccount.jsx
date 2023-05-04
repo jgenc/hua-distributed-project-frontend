@@ -8,7 +8,7 @@ import CustomSelect from "../../components/CustomSelect";
 import accountService from "../../services/account";
 import { useUser } from "../../store/user";
 import createNotification from "../../utils/notification";
-import tokens from "../../utils/tokens";
+import { accessToken, decodeToken } from "../../utils/tokens";
 
 const doy = [
   "ΑΘΗΝΩΝ Α'",
@@ -28,8 +28,8 @@ const doy = [
 ];
 
 const schema = object({
-  firstName: string().min(3).max(20).required(),
-  lastName: string().min(3).max(20).required(),
+  first_name: string().min(3).max(20).required(),
+  last_name: string().min(3).max(20).required(),
   address: string().min(3).max(50).required(),
   doy: mixed().oneOf(doy).required()
 });
@@ -43,14 +43,12 @@ function NewAccount(props) {
   const { form, errors, isValid, setFields } = createForm({
     extend: validator({ schema }),
     onSubmit: async values => {
+      accountService.setToken(accessToken());
       setSpinner(true);
-      accountService.setToken(JSON.parse(window.sessionStorage.getItem("userToken")).accessToken);
       const accountToken = await accountService.newAccount(values);
       setSpinner(false);
-      console.log(accountToken);
-      // TODO: make helper functions for setting/unsetting tokens
-      // TODO: Test If the account token is saved corecctly
-      await setAccount();
+
+      await setAccount(accountToken);
       navigate("/");
     }
   });
@@ -60,30 +58,31 @@ function NewAccount(props) {
     // Check if token corresponds to an account
     // If it exists, redirect user to Home
     // If it does not, proceed to Account Creation
-    const userToken = tokens.userToken();
 
-    if (!userToken) {
+    const token = decodeToken(accessToken());
+
+    if (!user().user) {
       // User not logged in
       navigate("/");
       return;
     }
-    if (userToken.roles.includes("ROLE_ADMIN")) {
+    if (token.admin) {
       // Admin cannot create an account
       navigate("/");
       return;
     }
     // If account already exists, go to home
-    const accountToken = tokens.accountToken();
-    console.log(accountToken);
-    if (accountToken) {
-      navigate("/");
-      return;
-    }
+    // const accountToken = token.accountToken();
+    // console.log(accountToken);
+    // if (accountToken) {
+    // navigate("/");
+    // return;
+    // }
   });
 
   onCleanup(() => {
     // If user leaves for some reason, cleanup tokens
-    if (!tokens.accountToken()) {
+    if (accessToken()) {
       logout();
     }
   });
@@ -103,20 +102,20 @@ function NewAccount(props) {
         >
           <Heading size="3xl">Δημιουργία Λογαριασμού</Heading>
 
-          <FormControl required invalid={!!errors("firstName")}>
-            <FormLabel for="firstName">Όνομα</FormLabel>
+          <FormControl required invalid={!!errors("first_name")}>
+            <FormLabel for="first_name">Όνομα</FormLabel>
             <Input
-              name="firstName"
+              name="first_name"
             />
-            <FormErrorMessage>{errors("firstName")[0]}</FormErrorMessage>
+            <FormErrorMessage>{errors("first_name")[0]}</FormErrorMessage>
           </FormControl>
 
-          <FormControl required invalid={!!errors("lastName")}>
-            <FormLabel for="lastName">Επίθετο</FormLabel>
+          <FormControl required invalid={!!errors("last_name")}>
+            <FormLabel for="last_name">Επίθετο</FormLabel>
             <Input
-              name="lastName"
+              name="last_name"
             />
-            <FormErrorMessage>{errors("lastName")[0]}</FormErrorMessage>
+            <FormErrorMessage>{errors("last_name")[0]}</FormErrorMessage>
           </FormControl>
 
           <FormControl required invalid={!!errors("address")}>

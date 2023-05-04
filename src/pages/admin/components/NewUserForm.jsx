@@ -28,10 +28,10 @@ function NewUserForm(props) {
       const result = await userService.createUser(newUser);
       setSpinner(false);
 
-      if (result.name === "AxiosError") {
-        createNotification("danger", "Σφάλμα", id.response.data.message);
-        return;
-      }
+      // if (result.name === "AxiosError") {
+      //   createNotification("danger", "Σφάλμα", id.response.data.message);
+      //   return;
+      // }
       merged.setUsers([...merged.users(), { ...result }]);
       onClose();
       createNotification("success", "Επιτυχής Προσθήκη Χρήστη");

@@ -38,7 +38,7 @@ function Navbar(props) {
               <Button as={Link} href="/login">Log in</Button>
             }>
               <p>
-                Καλωσήρθατε, <b>{user().account.firstName} {user().account.lastName}</b>
+                Καλωσήρθατε, <b>{user().account.first_name} {user().account.last_name}</b>
               </p>
               <Menu>
                 <MenuTrigger as={Button} variant="subtle" colorScheme="info">
