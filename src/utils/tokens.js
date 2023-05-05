@@ -17,6 +17,9 @@ export const removeTokens = () => {
   window.sessionStorage.removeItem("account_token");
 }
 
+export const refreshToken = (token) => {
+  window.sessionStorage.setItem("access_token", JSON.stringify(token));
+}
 
 // New token
 // {

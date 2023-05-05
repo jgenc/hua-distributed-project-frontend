@@ -9,10 +9,12 @@ function Option(props) {
   const merged = mergeProps({ tin: null, acceptance: null, setAcceptance: null, id: null }, props);
   const [disableButton, setDisableButton] = createSignal(accountToken().tin !== merged.tin || merged.acceptance() === null || merged.acceptance());
 
+  console.log("Merged Tin: ", merged.tin, "Account Tin: ", accountToken().tin, "Acceptance: ", merged.acceptance());
+
   const [spinner, setSpinner] = createSignal(false);
   const handleAcceptance = async () => {
     setSpinner(true);
-    declarationsService.setToken(accessToken);
+    declarationsService.setToken(accessToken());
     await declarationsService.acceptDeclaration(merged.id);
     setSpinner(false);
     merged.setAcceptance(true);

@@ -26,8 +26,8 @@ function CreateContract(props) {
   const handleSave = async () => {
     setSpinner(true);
     const contractObject = {
-      contractDetails: contract(),
-      paymentMethod: select()
+      contract_details: contract(),
+      payment_method: select()
     };
     declarationsService.setToken(accessToken());
     await declarationsService.completeDeclaration(merged.id, contractObject);

@@ -3,7 +3,9 @@ import { createStore } from "solid-js/store";
 import loginService from "../services/login";
 import accountService from "../services/account";
 import { loadState, saveState } from "../utils/state";
-import { accessToken, decodeToken, removeTokens } from "../utils/tokens";
+import { accessToken, decodeToken, removeTokens, refreshToken } from "../utils/tokens";
+
+// TODO: Find a better goddamn name. It is so ugly to call user().user ...
 
 const UserContext = createContext();
 
@@ -37,7 +39,7 @@ export function UserProvider(props) {
         // ! special admin case
         if (tokenData.admin) {
           // if (userToken.roles.includes("ROLE_ADMIN")) {
-          setUser({ ...user(), account: { firstName: "Admin", lastName: "" } });
+          setUser({ ...user(), account: { first_name: "Admin", last_name: "" } });
           saveState(user());
           return;
         }
@@ -76,6 +78,14 @@ export function UserProvider(props) {
         setUser({ ...user(), account: accountToken });
         saveState(user());
       },
+      refreshUserTime(newToken) {
+        const newTokenData = decodeToken(newToken.access_token);
+        if (user().user.exp !== newTokenData.exp) {
+          setUser({ ...user(), user: newTokenData });
+          saveState(user());
+          refreshToken(newToken.access_token);
+        }
+      }
     }
   ];
 

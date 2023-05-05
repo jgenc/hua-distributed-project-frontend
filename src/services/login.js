@@ -22,4 +22,19 @@ const login = async (credentials) => {
   }
 };
 
-export default { login };
+const refresh = async (token) => {
+  try {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+    const response = await axios.get(baseUrl + "/refresh", config);
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
+
+export default { login, refresh };

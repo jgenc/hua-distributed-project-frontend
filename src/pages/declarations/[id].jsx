@@ -23,9 +23,10 @@ function Declaration(props) {
 
   createEffect(() => {
     if (declaration.state === "ready") {
-      setisDeclarationCompleted(declaration().sellerAcceptance
-        && declaration().purchaserAcceptance);
-      console.log(declaration());
+      setisDeclarationCompleted(
+        declaration().seller_acceptance
+        && declaration().purchaser_acceptance);
+      console.log("User is", user());
     }
   });
 
@@ -69,31 +70,31 @@ function Declaration(props) {
             <UserData user={declaration().seller} name="Πωλητή" />
             <Divider />
 
-            <PropertyData property={{ number: declaration().propertyNumber, category: declaration().propertyCategory, description: declaration().propertyDescription }} />
+            <PropertyData property={{ number: declaration().property_number, category: declaration().property_category, description: declaration().property_description }} />
             <Divider />
 
             <Acceptance
               name="Πωλητή"
               user={declaration().seller}
-              acceptance={declaration().sellerAcceptance}
+              acceptance={declaration().seller_acceptance}
               id={params.id} />
             <Divider />
 
             <Acceptance
               name="Αγοραστή"
               user={declaration().purchaser}
-              acceptance={declaration().purchaserAcceptance}
+              acceptance={declaration().purchaser_acceptance}
               id={params.id} />
             <Divider />
 
-            <Show when={isDeclarationCompleted() && user().roles.includes("ROLE_NOTARY")}>
-              <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contractDetails} paymentMethod={declaration().paymentMethod} id={params.id} />
+            <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
+              <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contract_details} paymentMethod={declaration().payment_method} id={params.id} />
               <Divider />
             </Show>
 
             <PaymentData name="Στοιχεία Φόρου" tax={declaration().tax} purchaser={declaration().purchaser} />
-            {/* 
-            <Show when={isDeclarationCompleted()}>
+
+            {/* <Show when={isDeclarationCompleted()}>
               <CompleteDeclaration />
             </Show> */}
           </Container>
