@@ -29,31 +29,27 @@ export function UserProvider(props) {
         const loginResponse = await loginService.login(credentials);
         const tokenData = decodeToken(loginResponse.access_token);
 
-        // failed login, create notification
+        // Failed login, create notification
         if (!tokenData) return;
-
         window.sessionStorage.setItem("access_token", JSON.stringify(loginResponse.access_token));
-        setUser({ user: tokenData });
-        saveState(user());
 
-        // ! special admin case
+        // Special admin account object
         if (tokenData.admin) {
-          // if (userToken.roles.includes("ROLE_ADMIN")) {
-          setUser({ ...user(), account: { first_name: "Admin", last_name: "" } });
+          setUser({ user: tokenData, account: { first_name: "Admin", last_name: "" } });
           saveState(user());
           return;
         }
 
-        // Fetch account info if it exists
+        // Fetch account info for person
         accountService.setToken(accessToken());
-        const accountToken = await accountService.getAccount(user().user.tin);
-        console.log("Token from trying to access account: ", accountToken);
+        const accountToken = await accountService.getAccount(tokenData.tin);
+        // FIXME: This is not handled
         if (accountToken.name === "AxiosError") {
           console.log("error on setting account token");
           return;
         }
         window.sessionStorage.setItem("account_token", JSON.stringify(accountToken));
-        setUser({ ...user(), account: accountToken });
+        setUser({ user: tokenData, account: accountToken });
         saveState(user());
       },
       logout() {

@@ -11,6 +11,7 @@ import UserData from "../admin/components/UserData";
 import declarations from "../../services/declarations";
 import { useUser } from "../../store/user";
 import { accessToken } from "../../utils/tokens";
+import createNotification from "../../utils/notification";
 
 function Declaration(props) {
   const params = useParams();
@@ -20,13 +21,18 @@ function Declaration(props) {
   const navigate = useNavigate();
   const [isDeclarationCompleted, setisDeclarationCompleted] = createSignal(false);
 
+  onMount(() => {
+    if (!user().user) {
+      createNotification("danger", "Δεν είστε συνδεδεμένος");
+      navigate("/");
+    }
+  });
 
   createEffect(() => {
     if (declaration.state === "ready") {
       setisDeclarationCompleted(
         declaration().seller_acceptance
         && declaration().purchaser_acceptance);
-      console.log("User is", user());
     }
   });
 
@@ -87,10 +93,10 @@ function Declaration(props) {
               id={params.id} />
             <Divider />
 
-            <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
+            {/* <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
               <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contract_details} paymentMethod={declaration().payment_method} id={params.id} />
               <Divider />
-            </Show>
+            </Show> */}
 
             <PaymentData name="Στοιχεία Φόρου" tax={declaration().tax} purchaser={declaration().purchaser} />
 

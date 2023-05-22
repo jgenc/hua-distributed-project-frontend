@@ -1,5 +1,5 @@
 import { Button, Center, Container, FormControl, FormHelperText, FormLabel, Heading, HStack, Input, VStack } from "@hope-ui/solid";
-import { useNavigate } from "@solidjs/router";
+import { Navigate, useNavigate } from "@solidjs/router";
 import { createSignal, onMount } from "solid-js";
 import { useUser } from "../store/user";
 import createNotification from "../utils/notification";
