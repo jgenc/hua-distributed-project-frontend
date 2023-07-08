@@ -45,6 +45,12 @@ export function UserProvider(props) {
         const accountToken = await accountService.getAccount(tokenData.tin);
         // FIXME: This is not handled
         if (accountToken.name === "AxiosError") {
+          if (accountToken.response.status === 404) {
+            console.log("404 error")
+            setUser({user: tokenData, account: undefined })
+            saveState(user())
+            return
+          }
           console.log("error on setting account token");
           return;
         }
@@ -62,6 +68,7 @@ export function UserProvider(props) {
 
         if (account_token) {
           setUser({ ...user(), account: account_token });
+          window.sessionStorage.setItem("accountToken", JSON.stringify(account_token));
           saveState(user());
           return;
         }
