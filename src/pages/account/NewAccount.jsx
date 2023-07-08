@@ -80,13 +80,6 @@ function NewAccount(props) {
     // }
   });
 
-  onCleanup(() => {
-    // If user leaves for some reason, cleanup tokens
-    if (accessToken()) {
-      logout();
-    }
-  });
-
   return (
     <Center h="$xl">
       <Container centerContent>
