@@ -44,12 +44,19 @@ export function UserProvider(props) {
         accountService.setToken(accessToken());
         const accountToken = await accountService.getAccount(tokenData.tin);
         // FIXME: This is not handled
+        console.log(`After logging in, I get this: ${accountToken}`);
+        if (!accountToken) {
+          console.log("404 error");
+          setUser({ user: tokenData, account: undefined });
+          saveState(user());
+          return;
+        }
         if (accountToken.name === "AxiosError") {
           if (accountToken.response.status === 404) {
-            console.log("404 error")
-            setUser({user: tokenData, account: undefined })
-            saveState(user())
-            return
+            console.log("404 error");
+            setUser({ user: tokenData, account: undefined });
+            saveState(user());
+            return;
           }
           console.log("error on setting account token");
           return;

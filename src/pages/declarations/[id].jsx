@@ -93,16 +93,16 @@ function Declaration(props) {
               id={params.id} />
             <Divider />
 
-            {/* <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
+            <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
               <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contract_details} paymentMethod={declaration().payment_method} id={params.id} />
               <Divider />
-            </Show> */}
+            </Show>
 
             <PaymentData name="Στοιχεία Φόρου" tax={declaration().tax} purchaser={declaration().purchaser} />
 
-            {/* <Show when={isDeclarationCompleted()}>
+            <Show when={isDeclarationCompleted()}>
               <CompleteDeclaration />
-            </Show> */}
+            </Show>
           </Container>
         </VStack>
       </Center>
