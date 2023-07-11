@@ -23,7 +23,7 @@ pipeline {
           
           sh '''
             DEVICE_IP=$(curl --silent --fail ifconfig.me/ip)
-            sed 's/^VITE_SOLID_BACKEND/VITE_SOLID_BACKEND=$DEVICE_IP'
+            sed 's/^VITE_SOLID_BACKEND/VITE_SOLID_BACKEND=$DEVICE_IP/'
             cat ./.env
           '''
         }
