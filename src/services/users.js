@@ -4,7 +4,7 @@ import { removeTokens } from "../utils/tokens";
 import { useNavigate } from "@solidjs/router";
 
 const apiUrl = "/api/admin/user";
-let baseUrl = location.hostname;
+let baseUrl = `http://${location.hostname}`;
 const backendUrl = import.meta.env.VITE_SOLID_BACKEND;
 baseUrl = backendUrl
   ? backendUrl.concat(apiUrl)
