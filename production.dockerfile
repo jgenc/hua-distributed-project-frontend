@@ -24,5 +24,5 @@ RUN mv dist/* /usr/share/nginx/html
 # TODO: Fix the goddamn nginx conf file
 # COPY ./assets/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# EXPOSE 80
+EXPOSE 80/tcp
 ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
