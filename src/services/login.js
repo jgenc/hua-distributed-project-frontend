@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiUrl = "/api/auth/login";
-let baseUrl = "http://localhost:8000";
+let baseUrl = location.hostname;
 const backendUrl = import.meta.env.VITE_SOLID_BACKEND;
 baseUrl = backendUrl
   ? backendUrl.concat(apiUrl)
