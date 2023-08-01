@@ -27,6 +27,11 @@ export function UserProvider(props) {
       async login(credentials) {
         // Fetch login token
         const loginResponse = await loginService.login(credentials);
+        if (!loginResponse) {
+          setUser({ user: undefined, account: undefined });
+          saveState(user());
+          return;
+        }
         const tokenData = decodeToken(loginResponse.access_token);
 
         // Failed login, create notification

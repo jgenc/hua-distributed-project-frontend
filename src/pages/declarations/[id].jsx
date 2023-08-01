@@ -1,4 +1,4 @@
-import { Box, Center, Container, Divider, Heading, HStack, Input, Skeleton, Spinner, Text, VStack } from "@hope-ui/solid";
+import { Box, Button, Center, Container, Divider, Heading, HStack, Input, Skeleton, Spacer, Spinner, Text, VStack } from "@hope-ui/solid";
 import { useBeforeLeave, useNavigate, useParams, useRouteData } from "@solidjs/router";
 import { VsAccount } from "solid-icons/vs";
 import { createEffect, createResource, createSelector, createSignal, onMount, Show, Suspense } from "solid-js";
@@ -43,69 +43,94 @@ function Declaration(props) {
     }
   });
 
+  console.log(user());
+
   return (
-    <Show when={declaration()} fallback={
-      <Center p="$10">
-        <Spinner size="lg" />
-      </Center>
-    }>
-      <Center p="$10">
-        <VStack
-          width="$5xl"
-          spacing="$3"
-          // alignItems="stretch"
-          borderWidth="1px"
-          borderColor="$neutral6"
-          borderRadius="$lg"
-          overflow="hidden" >
+    <Show when={user().user !== undefined}>
+      <Show when={declaration()}
+        fallback={
+          <Center
+            p="$10"
+          >
+            <Spinner></Spinner>
+          </Center>
+        }
+      >
 
-          <Container p="$1">
-            <Center>
-              <Text size="2xl">Δήλωση {declaration().id}</Text>
-            </Center>
-          </Container>
-          <Divider />
+        <VStack>
+          <Center p="$10">
+            <VStack
+              width="$5xl"
+              // spacing="$"
+              // alignItems="stretch"
+              borderWidth="1px"
+              borderColor="$neutral6"
+              borderRadius="$lg"
+              overflow="hidden" >
 
-          <Container>
-            <UserData user={declaration().notary} name="Συμβολαιογράφου" />
-            <Divider />
+              <Container
+                p="$5"
+              >
+                <Center>
+                  <Text size="2xl">
+                    Declaration <b>#{declaration().id}</b>
+                  </Text>
+                </Center>
+              </Container>
+              <Divider color="$blackAlpha8" />
 
-            <UserData user={declaration().purchaser} name="Αγοραστή" />
-            <Divider />
+              <Container>
+                <UserData user={declaration().notary} name="Notary" />
+                <Divider color="$blackAlpha10" />
 
-            <UserData user={declaration().seller} name="Πωλητή" />
-            <Divider />
+                <UserData user={declaration().purchaser} name="Purchaser" />
+                <Divider color="$blackAlpha10" />
 
-            <PropertyData property={{ number: declaration().property_number, category: declaration().property_category, description: declaration().property_description }} />
-            <Divider />
+                <UserData user={declaration().seller} name="Seller" />
+                <Divider color="$blackAlpha10" />
 
-            <Acceptance
-              name="Πωλητή"
-              user={declaration().seller}
-              acceptance={declaration().seller_acceptance}
-              id={params.id} />
-            <Divider />
+                <PropertyData property={{ number: declaration().property_number, category: declaration().property_category, description: declaration().property_description }} />
+                <Divider color="$blackAlpha10" />
 
-            <Acceptance
-              name="Αγοραστή"
-              user={declaration().purchaser}
-              acceptance={declaration().purchaser_acceptance}
-              id={params.id} />
-            <Divider />
+                <Acceptance
+                  name="Seller"
+                  user={declaration().seller}
+                  acceptance={declaration().seller_acceptance}
+                  id={params.id} />
+                <Divider color="$blackAlpha10" />
 
-            <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
-              <ContractData name="Στοιχεία Συμβόλαιου" contract={declaration().contract_details} paymentMethod={declaration().payment_method} id={params.id} />
-              <Divider />
-            </Show>
+                <Acceptance
+                  name="Purchaser"
+                  user={declaration().purchaser}
+                  acceptance={declaration().purchaser_acceptance}
+                  id={params.id} />
+                <Divider color="$blackAlpha10" />
 
-            <PaymentData name="Στοιχεία Φόρου" tax={declaration().tax} purchaser={declaration().purchaser} />
+                <Show when={isDeclarationCompleted() && user().user.tin === declaration().notary.tin}>
+                  <ContractData name="Contract Info" contract={declaration().contract_details} paymentMethod={declaration().payment_method} id={params.id} />
+                  <Divider color="$blackAlpha10" />
+                </Show>
 
-            <Show when={isDeclarationCompleted()}>
+                <PaymentData name="Tax info" tax={declaration().tax} purchaser={declaration().purchaser} />
+                {/* <Divider color="$blackAlpha10" /> */}
+
+                {/* <Show when={isDeclarationCompleted()}>
               <CompleteDeclaration />
-            </Show>
-          </Container>
+            </Show> */}
+              </Container>
+            </VStack>
+          </Center>
+
+          <Button
+            onClick={() => navigate("/")}
+            variant="subtle"
+          >
+            Go back
+          </Button>
+
         </VStack>
-      </Center>
+
+      </Show>
     </Show>
 
   );

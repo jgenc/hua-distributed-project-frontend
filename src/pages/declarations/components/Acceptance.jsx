@@ -6,18 +6,18 @@ import DataCell from "../../../components/DataCell";
 import DataWrapper from "../../../components/DataWrapper";
 
 function Option(props) {
-  const merged = mergeProps({ tin: null, acceptance: null, setAcceptance: null, id: null }, props);
-  const [disableButton, setDisableButton] = createSignal(accountToken().tin !== merged.tin || merged.acceptance() === null || merged.acceptance());
+  props = mergeProps({ tin: null, acceptance: null, setAcceptance: null, id: null }, props);
+  const [disableButton, setDisableButton] = createSignal(accountToken().tin !== props.tin || props.acceptance() === null || props.acceptance());
 
-  console.log("Merged Tin: ", merged.tin, "Account Tin: ", accountToken().tin, "Acceptance: ", merged.acceptance());
+  console.log("Merged Tin: ", props.tin, "Account Tin: ", accountToken().tin, "Acceptance: ", props.acceptance());
 
   const [spinner, setSpinner] = createSignal(false);
   const handleAcceptance = async () => {
     setSpinner(true);
     declarationsService.setToken(accessToken());
-    await declarationsService.acceptDeclaration(merged.id);
+    await declarationsService.acceptDeclaration(props.id);
     setSpinner(false);
-    merged.setAcceptance(true);
+    props.setAcceptance(true);
     setDisableButton(true);
   };
 
@@ -35,7 +35,7 @@ function Option(props) {
           disabled={disableButton()}
           onClick={handleAcceptance}
           size="xs" >
-          Αποδοχή
+          Accept
         </Button>
       </HStack>
     </Center>
@@ -48,22 +48,22 @@ function Status(props) {
   return (
     <Center>
       <Tag colorScheme={merged.acceptance() ? "success" : "danger"}>
-        {merged.acceptance() ? "Αποδεκτή" : "Μη αποδεκτή"}
+        {merged.acceptance() ? "Accepted" : "Not accepted"}
       </Tag>
     </Center>
   );
 }
 
 function Acceptance(props) {
-  const merged = mergeProps({ name: null, user: null, acceptance: null, id: null }, props);
-  const [acceptance, setAcceptance] = createSignal(merged.acceptance);
+  props = mergeProps({ name: null, user: null, acceptance: null, id: null }, props);
+  const [acceptance, setAcceptance] = createSignal(props.acceptance);
   return (
-    <DataWrapper name={`Υποβολή Δήλωσης ${merged.name}`}>
+    <DataWrapper name={`${props.name} Acceptance`}>
       <HStack>
-        <DataCell name="ΑΦΜ" value={merged.user.tin} />
-        <DataCell name="Όνομα" value={merged.user.firstName} />
-        <DataCell name="Υποβολή" customRow={<Option tin={merged.user.tin} acceptance={acceptance} setAcceptance={setAcceptance} id={merged.id} />} />
-        <DataCell name="Κατάσταση" customRow={<Status acceptance={acceptance} />} />
+        <DataCell name="TIN" value={props.user.tin} />
+        <DataCell name="Name" value={props.user.first_name} />
+        <DataCell name="Acceptance" customRow={<Option tin={props.user.tin} acceptance={acceptance} setAcceptance={setAcceptance} id={props.id} />} />
+        <DataCell name="Status" customRow={<Status acceptance={acceptance} />} />
       </HStack>
     </DataWrapper>
   );

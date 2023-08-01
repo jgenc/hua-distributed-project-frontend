@@ -1,6 +1,7 @@
 import { Route, Routes } from "@solidjs/router";
 import { lazy } from "solid-js";
 import Navbar from "./components/Navbar";
+import { useUser } from "./store/user";
 const NewDeclaration = lazy(() => import("./pages/declarations/NewDeclaration"));
 const ShowAllDeclarations = lazy(() => import("./pages/declarations/ShowAllDeclarations"));
 const Declaration = lazy(() => import("./pages/declarations/[id].jsx"));
@@ -13,6 +14,7 @@ const About = lazy(() => import("./pages/About"));
 // ? Create a Layout component
 
 function App() {
+
   return (
     <>
       <Navbar />
@@ -20,7 +22,7 @@ function App() {
         <Route path="/" component={Home} />
         <Route path="/admin" component={Admin} />
         <Route path="/login" component={Login} />
-        <Route path="/about" component={About}/>
+        <Route path="/about" component={About} />
         <Route path="/account">
           <Route path="/new" component={NewAccount} />
         </Route>

@@ -1,7 +1,7 @@
 import { createForm } from "@felte/solid";
 import { validator } from "@felte/validator-yup";
 import { Anchor, Box, Button, Container, createDisclosure, Divider, FormControl, FormErrorMessage, FormLabel, HStack, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, VStack } from "@hope-ui/solid";
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, on } from "solid-js";
 import { mixed, number, object, string } from "yup";
 import CustomSelect from "../../components/CustomSelect";
 import declarationsService from "../../services/declarations";
@@ -12,20 +12,18 @@ import createNotification from "../../utils/notification";
 import { accessToken } from "../../utils/tokens";
 
 const categories = [
-  "Διαμέρισμα",
-  "Μονοκατοικία",
-  "Επαγγελματική",
-  "Οικόπεδο",
-  "Γεωργικά",
+  "Apartment",
+  "House",
+  "Vacation Home",
+  "Office Building",
+  "Warehouse",
+  "Hotel",
+  "Vacant land",
+  "Agricultural land",
+  "Raw land"
 ];
 
-const rates = [
-  0.05,
-  0.1,
-  0.2,
-  0.25,
-  0.1
-];
+const rate = 0.0309;
 
 const schema = object({
   property_number: string().min(1).max(5).required(),
@@ -38,6 +36,21 @@ const schema = object({
 });
 
 // TODO: Form checking
+
+async function checkForTin(tin, setTinError, tinError) {
+  if (tin().length === 9) {
+    setTinError("Checking TIN...");
+    accountService.setToken(accessToken());
+    const actualTin = await accountService.getAccount(tin());
+    if (actualTin.name === "AxiosError") {
+      setTinError("TIN does not exist.");
+    } else {
+      setTinError("");
+    }
+  } else if (tin().length < 9 && tinError()) {
+    setTinError("");
+  }
+}
 
 function NewDeclaration() {
   const [spinner, setSpinner] = createSignal(false);
@@ -64,53 +77,23 @@ function NewDeclaration() {
   const [sellerTin, setSellerTin] = createSignal("");
   const [sellerTinError, setSellerTinError] = createSignal();
 
-  // TODO: Merge the two Effectis into one
-
   createEffect(async () => {
-    if (purchaserTin().length === 9) {
-      // check if tin exists
-      setPurchaserTinError("Checking TIN...");
-      accountService.setToken(accessToken());
-      const actualTin = await accountService.getAccount(purchaserTin());
-      if (actualTin.name === "AxiosError") {
-        setPurchaserTinError("TIN does not exist.");
-      } else {
-        setPurchaserTinError("");
-      }
-    } else if (purchaserTin().length < 9 && purchaserTinError()) {
-      setPurchaserTinError("");
-    }
-  });
-
-  createEffect(async () => {
-    if (sellerTin().length === 9) {
-      setSellerTinError("Checking TIN...");
-      accountService.setToken(accessToken());
-      const actualTin = await accountService.getAccount(sellerTin());
-      if (actualTin.name === "AxiosError") {
-        setSellerTinError("TIN does not exist.");
-      } else {
-        setSellerTinError("");
-      }
-    } else if (sellerTin().length < 9 && sellerTinError()) {
-      setSellerTinError("");
-    }
+    checkForTin(purchaserTin, setPurchaserTinError, purchaserTinError);
+    checkForTin(sellerTin, setSellerTinError, sellerTinError);
   });
 
   const [propertyCategory, setPropertyCategory] = createSignal(null);
   const [propertyValue, setPropertyValue] = createSignal(null);
   const [tax, setTax] = createSignal(0);
 
-  createEffect(() => {
-    if (!propertyCategory() || !propertyValue())
-      return;
-    setTax(propertyValue() * rates[categories.indexOf(propertyCategory())]);
+  createEffect(on(propertyValue, (value) => {
+    setTax(value * rate);
     setData("tax", tax());
-  });
+  }));
 
   return (
     <>
-      <FunctionalityButton text="Καινούρια δήλωση" icon={<VsAdd />} onClick={onOpen} />
+      <FunctionalityButton text="Create a new declaration" icon={<VsAdd />} onClick={onOpen} />
       <Modal
         opened={isOpen()}
         onClose={onClose}
@@ -121,72 +104,72 @@ function NewDeclaration() {
         <Box as="form" ref={form}>
           <ModalContent>
             <ModalCloseButton />
-            <ModalHeader>Νέα Δήλωση</ModalHeader>
+            <ModalHeader>New declaration</ModalHeader>
             <Divider />
             <ModalBody>
               <FormControl required invalid={!!errors("property_number")}>
-                <FormLabel for="property_number">Αριθμός Ακινήτου</FormLabel>
+                <FormLabel for="property_number">Property Number</FormLabel>
                 <Input
                   name="property_number"
                   minLength="1"
                   maxLength="5" />
-                <FormErrorMessage>{errors("property_number")[0]}</FormErrorMessage>
+                <FormErrorMessage>{errors("property_number")[0].replace("property_number", "The property number")}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("property_category")}>
-                <FormLabel for="property_category">Κατηγορίας Ακινήτου</FormLabel>
+                <FormLabel for="property_category">Property Category</FormLabel>
                 <CustomSelect
                   setPropertyCategory={setPropertyCategory}
                   selectList={categories}
                   name="property_category"
-                  placeholder="Διάλεξε κατηγορία"
+                  placeholder="Pick a category"
                   setFields={setFields} />
                 <FormErrorMessage>{errors("property_category")[0]}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("properety_value")}>
-                <FormLabel for="properety_value">Αξία Ακινήτου</FormLabel>
+                <FormLabel for="properety_value">Property Value</FormLabel>
                 <Input name="properety_value" type="number" value={propertyValue()} onChange={(e) => setPropertyValue(e.target.value)}></Input>
-                <FormErrorMessage>{errors("properety_value")[0]}</FormErrorMessage>
+                <FormErrorMessage>{errors("properety_value")[0].replace("property_value", "The property value")}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("property_description")}>
-                <FormLabel for="property_description">Περιγραφή Ακινήτου</FormLabel>
+                <FormLabel for="property_description">Property Description</FormLabel>
                 <Input name="property_description" />
-                <FormErrorMessage>{errors("property_description")[0]}</FormErrorMessage>
+                <FormErrorMessage>{errors("property_description")[0].replace("property_description", "The property description")}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("purchaser_tin") || purchaserTinError()}>
-                <FormLabel for="purchaser_tin">ΑΦΜ Αγοραστή</FormLabel>
+                <FormLabel for="purchaser_tin">Purchaser TIN</FormLabel>
                 <Input
                   name="purchaser_tin"
                   value={purchaserTin()}
                   onChange={(e) => { setPurchaserTin(e.target.value); setData("purchaser_tin", purchaserTin()); }}
                   minLength="9"
                   maxLength="9" />
-                <FormErrorMessage>{purchaserTinError() ? purchaserTinError() : errors("purchaser_tin")[0]}</FormErrorMessage>
+                <FormErrorMessage>{purchaserTinError() ? purchaserTinError() : errors("purchaser_tin")[0].replace("purchaser_tin", "The Purchaser's TIN")}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("seller_tin") || sellerTinError()}>
-                <FormLabel for="seller_tin">ΑΦΜ Πωλητή</FormLabel>
+                <FormLabel for="seller_tin">Seller TIN</FormLabel>
                 <Input
                   name="seller_tin"
                   value={sellerTin()}
                   onChange={(e) => { setSellerTin(e.target.value); setData("seller_tin", sellerTin()); }}
                   minLength="9"
                   maxLength="9" />
-                <FormErrorMessage>{sellerTinError() ? sellerTinError : errors("seller_tin")[0]}</FormErrorMessage>
+                <FormErrorMessage>{sellerTinError() ? sellerTinError : errors("seller_tin")[0].replace("seller_tin", "The Seller's TIN")}</FormErrorMessage>
               </FormControl>
 
               <FormControl required invalid={!!errors("tax")}>
-                <FormLabel for="tax">Φόρος</FormLabel>
+                <FormLabel for="tax">Tax</FormLabel>
                 <Input
                   value={tax()}
                   name="tax"
                   type="number"
                   disabled
                   bg="$blackAlpha8" />
-                <FormErrorMessage>{errors("tax")[0]}</FormErrorMessage>
+                <FormErrorMessage>{errors("tax")[0].replace("tax", "The tax")}</FormErrorMessage>
               </FormControl>
             </ModalBody>
 

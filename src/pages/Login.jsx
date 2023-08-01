@@ -72,7 +72,7 @@ function LoginForm(props) {
               borderRadius="$lg"
               p="$5"
             >
-              <Heading size="3xl">Συνδεθείτε</Heading>
+              {/* <Heading size="3xl">Log In</Heading> */}
               <FormControl required>
                 <FormLabel for="username">Username</FormLabel>
                 <Input

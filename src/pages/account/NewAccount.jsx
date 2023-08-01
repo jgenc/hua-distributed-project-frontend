@@ -82,7 +82,7 @@ function NewAccount(props) {
 
   return (
     <Center h="$xl">
-      <Container centerContent>
+      <Container centerContent maxW="$sm" maxH="$sm">
         <VStack
           as="form"
           ref={form}
@@ -93,44 +93,44 @@ function NewAccount(props) {
           borderRadius="$lg"
           p="$5"
         >
-          <Heading size="3xl">Δημιουργία Λογαριασμού</Heading>
+          <Heading size="2xl">Account Creation</Heading>
 
           <FormControl required invalid={!!errors("first_name")}>
-            <FormLabel for="first_name">Όνομα</FormLabel>
+            <FormLabel for="first_name">First Name</FormLabel>
             <Input
               name="first_name"
             />
-            <FormErrorMessage>{errors("first_name")[0]}</FormErrorMessage>
+            <FormErrorMessage>{errors("first_name")[0].replace("first_name", "Your first name")}</FormErrorMessage>
           </FormControl>
 
           <FormControl required invalid={!!errors("last_name")}>
-            <FormLabel for="last_name">Επίθετο</FormLabel>
+            <FormLabel for="last_name">Last Name</FormLabel>
             <Input
               name="last_name"
             />
-            <FormErrorMessage>{errors("last_name")[0]}</FormErrorMessage>
+            <FormErrorMessage>{errors("last_name")[0].replace("last_name", "Your last name")}</FormErrorMessage>
           </FormControl>
 
           <FormControl required invalid={!!errors("address")}>
-            <FormLabel for="address">Διεύθυνση</FormLabel>
+            <FormLabel for="address">Address</FormLabel>
             <Input
               name="address"
             />
-            <FormErrorMessage>{errors("address")[0]}</FormErrorMessage>
+            <FormErrorMessage>{errors("address")[0].replace("address", "Your address")}</FormErrorMessage>
           </FormControl>
 
           <FormControl required invalid={!!errors("doy")}>
-            <FormLabel for="address">ΔΟΥ</FormLabel>
+            <FormLabel for="address">Greek SEE</FormLabel>
             <CustomSelect
               setFields={setFields}
               selectList={doy}
               name="doy"
-              placeholder="Διάλεξε ΔΟΥ" />
+              placeholder="Pick a Greek SEE" />
             <FormErrorMessage>{errors("doy")[0]}</FormErrorMessage>
           </FormControl>
 
           <HStack justifyContent="flex-end">
-            <Button type="submit" colorScheme="success" disabled={!isValid()} loading={spinner()}>Δημιουργία</Button>
+            <Button type="submit" colorScheme="success" disabled={!isValid()} loading={spinner()}>Continue</Button>
           </HStack>
         </VStack>
       </Container>

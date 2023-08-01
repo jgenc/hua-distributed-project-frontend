@@ -1,11 +1,12 @@
 import { Center, Container, Heading, HStack, VStack } from "@hope-ui/solid";
 import { VsAdd, VsSearch } from 'solid-icons/vs';
-import { Show } from "solid-js";
+import { onMount, Show } from "solid-js";
 import FunctionalityButton from "../components/FunctionalityButton";
 import Navbar from "../components/Navbar";
 import { useUser } from "../store/user";
 import NewDeclaration from "./declarations/NewDeclaration";
 import ShowAllDeclarations from "./declarations/ShowAllDeclarations";
+import { useNavigate } from "@solidjs/router";
 
 
 function Landing() {
@@ -15,10 +16,10 @@ function Landing() {
 
         <Heading
           size="3xl" >
-          Καλωσήρθατε στο σύστημα Δήλωσης Mεταφοράς Ακινήτου.
+          Welcome to the Property Tax Manager System
         </Heading>
         <Heading level="2" size="md">
-          Παρακαλώ συνδεθείτε με τα στοιχεία που σας έχουν δωθεί για να έχετε πρόσβαση στις υπηρεσίες του συστήματος
+          To use the website you need to login with the username and password you've been provided with
         </Heading>
 
       </VStack>
@@ -29,6 +30,15 @@ function Landing() {
 
 function Home(props) {
   const [user, { _ }] = useUser();
+  const navigate = useNavigate();
+
+  onMount(() => {
+    if (!user().user) return;
+    if (user().user.admin) {
+      navigate("/admin");
+      return;
+    }
+  });
 
   return (
     <>

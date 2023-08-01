@@ -5,13 +5,13 @@ import DataWrapper from "../../../components/DataWrapper";
 
 
 function PropertyData(props) {
-  const merged = mergeProps({ property: null }, props);
+  props = mergeProps({ property: null }, props);
   return (
-    <DataWrapper name="Στοιχεία Ακινήτου">
+    <DataWrapper name="Property Info">
       <HStack>
-        <DataCell name="Αριθμός Ακινήτου" value={merged.property_number} />
-        <DataCell name="Κατηγορία Ακινήτου" value={merged.property_category} />
-        <DataCell name="Περιγραφή Ακινήτου" value={merged.property_description} />
+        <DataCell name="Number" value={props.property.number} />
+        <DataCell name="Category" value={props.property.category} />
+        <DataCell name="Description" value={props.property.description} />
       </HStack>
     </DataWrapper>
   );

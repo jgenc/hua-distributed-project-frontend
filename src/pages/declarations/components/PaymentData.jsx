@@ -15,11 +15,11 @@ function Payment(props) {
 }
 
 function PaymentData(props) {
-  const merged = mergeProps({ name: null, tax: null, purchaser: null }, props);
+  props = mergeProps({ name: null, tax: null, purchaser: null }, props);
   return (
-    <DataWrapper name={merged.name}>
+    <DataWrapper br name={props.name}>
       <HStack>
-        <DataCell name="Ποσό" value={<Payment tax={merged.tax} purchaser={merged.purchaser} />} />
+        <DataCell name="Amount" value={<Payment tax={props.tax} purchaser={props.purchaser} />} />
       </HStack>
     </DataWrapper>
   );

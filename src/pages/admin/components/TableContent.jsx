@@ -1,27 +1,27 @@
 import { createSignal, mergeProps } from "solid-js";
 import userService from "../../../services/users";
 
-import { Button, Container, createDisclosure, Flex, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
+import { Button, Container, createDisclosure, FormControl, FormLabel, HStack, Input, Menu, MenuContent, MenuItem, MenuTrigger, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Radio, RadioGroup, Spacer, Tag, Td, VStack } from "@hope-ui/solid";
 import createNotification from "../../../utils/notification";
 import { accessToken } from "../../../utils/tokens";
 
 function TableContent(props) {
-  const merged = mergeProps({ user: null, users: null, setUsers: null }, props);
-  const [role, setRole] = createSignal(merged.user.role);
+  props = mergeProps({ user: null, users: null, setUsers: null }, props);
+  const [role, setRole] = createSignal(props.user.role);
   const [spinner, setSpinner] = createSignal(false);
 
   const modalDelete = createDisclosure();
   const modalUpdateInfo = createDisclosure();
   const modalUpdatePassword = createDisclosure();
 
-  // ! Find a better place for handlers and fix the seira
   const deleteUser = async () => {
     setSpinner(true);
     userService.setToken(accessToken());
-    await userService.deleteUser(merged.user.tin);
+    await userService.deleteUser(props.user.tin);
     setSpinner(false);
-    merged.setUsers(merged.users().filter(u => u.id !== merged.user.id));
-    createNotification("success", "Διαγραφή Χρήστη Επιτυχής!");
+
+    props.setUsers(props.users().filter(u => u.id !== props.user.id));
+    createNotification("success", "Deleted user successfuly");
   };
 
   const changePassword = async (event) => {
@@ -32,13 +32,12 @@ function TableContent(props) {
 
 
     if (newPassword !== newPasswordConfirm) {
-      // TODO: Spawn notification
-      console.log("pwds not the same");
+      createNotification("danger", "Wrong confirmation password");
       return;
     }
 
     userService.setToken(accessToken());
-    await userService.changePassword(merged.user.tin, newPassword);
+    await userService.changePassword(props.user.tin, newPassword);
 
     modalUpdatePassword.onClose();
   };
@@ -58,46 +57,49 @@ function TableContent(props) {
     };
 
     // Check if values have changed
-    if (newUsername === merged.user.username) {
+    if (newUsername === props.user.username) {
       delete updatedUser.username;
     }
 
-    if (newTin === merged.user.tin) {
+    if (newTin === props.user.tin) {
       delete updatedUser.tin;
     }
 
-    if (role() == merged.user.role) {
+    if (role() == props.user.role) {
       delete updatedUser.role;
     }
 
     userService.setToken(accessToken());
-    const result = await userService.updateUser(merged.user.tin, updatedUser);
+    const result = await userService.updateUser(props.user.tin, updatedUser);
 
     console.log(result);
 
-    merged.setUsers(merged.users().map(
-      val => val.id === merged.user.id ?
+    props.setUsers(props.users().map(
+      val => val.id === props.user.id ?
         // TODO: Fix this, it's a hacky way to update the role
         ({ ...val, ...updatedUser }) :
         val
     ));
-    console.log(merged.users())
+    console.log(props.users());
     createNotification("success", "Επιτυχής αλλαγή στοιχείων χρήστη");
   };
 
   return (
     <tr>
-      <Td>{merged.user.id}</Td>
-      <Td>{merged.user.username}</Td>
-      <Td>{merged.user.tin}</Td>
+      <Td>{props.user.id}</Td>
+      <Td>{props.user.username}</Td>
+      <Td>{props.user.tin}</Td>
+      <Td>{props.user.account ?
+        <Tag colorScheme="success">Created</Tag> :
+        <Tag colorScheme="info">Not Created</Tag>}</Td>
       <Td>
         <Container>
           <HStack spacing="$3">
 
             <Tag
               size="md"
-              colorScheme={merged.user.role === "ROLE_ADMIN" ? "danger" : "primary"}
-            >{merged.user.role}</Tag>
+              colorScheme={props.user.role === "ROLE_ADMIN" ? "danger" : "primary"}
+            >{props.user.role}</Tag>
 
             <Spacer />
 
@@ -108,21 +110,21 @@ function TableContent(props) {
                 colorScheme="neutral"
                 rightIcon=""
               >
-                Επιλογές
+                Options
               </MenuTrigger>
               <MenuContent>
                 <MenuItem
                   colorScheme="danger"
                   onSelect={() => modalDelete.onOpen()}
-                  disabled={merged.user.role === "ROLE_ADMIN"}
+                  disabled={props.user.role === "ROLE_ADMIN"}
                 >
-                  Διαγραφή
+                  Delete
                 </MenuItem>
-                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={merged.user.role === "ROLE_ADMIN"}>
-                  Αλλαγή Στοιχείων
+                <MenuItem onSelect={() => modalUpdateInfo.onOpen()} disabled={props.user.role === "ROLE_ADMIN"}>
+                  Update Details
                 </MenuItem>
                 <MenuItem onSelect={() => modalUpdatePassword.onOpen()}>
-                  Αλλαγή Κωδικού
+                  Update Password
                 </MenuItem>
               </MenuContent>
             </Menu>
@@ -133,15 +135,16 @@ function TableContent(props) {
               <ModalOverlay />
               <ModalContent>
                 <ModalCloseButton />
-                <ModalHeader>Επιβεβαίωση</ModalHeader>
+                <ModalHeader>Confirmation</ModalHeader>
                 <ModalBody>
                   <p>
-                    Είστε σίγουρος ότι θέλετε να διαγράψετε τον χρήστη <b>{merged.user.username}</b> από το σύστημα;
+                    Are you sure you want to delete user <b>{props.user.username}</b> from the system?
                   </p>
                 </ModalBody>
                 <ModalFooter>
                   <HStack spacing="$4">
-                    <Button colorScheme="danger" onClick={deleteUser} loading={spinner()}>Ναι</Button>
+                    <Button colorScheme="danger" onClick={deleteUser} loading={spinner()}>Yes</Button>
+                    <Button colorScheme="neutral" onClick={modalDelete.onClose} loading={spinner()}>No</Button>
                   </HStack>
                 </ModalFooter>
               </ModalContent>
@@ -151,18 +154,20 @@ function TableContent(props) {
               <ModalOverlay />
               <ModalContent>
                 <ModalCloseButton />
-                <ModalHeader>Αλλαγή Στοιχείων Χρήστη <b>{merged.user.username}</b></ModalHeader>
-                <ModalBody>
-                  <form onSubmit={changeInformation}>
+
+                <ModalHeader>Update <b>{props.user.username}</b> details</ModalHeader>
+
+                <form onSubmit={changeInformation}>
+                  <ModalBody>
                     <VStack spacing="$3" alignItems="stretch">
                       <FormControl>
                         <FormLabel>Username</FormLabel>
-                        <Input value={merged.user.username} minLength="2" maxLength="20" />
+                        <Input value={props.user.username} minLength="2" maxLength="20" />
                       </FormControl>
 
                       <FormControl>
                         <FormLabel>TIN</FormLabel>
-                        <Input value={merged.user.tin} minLength="8" maxLength="9" />
+                        <Input value={props.user.tin} minLength="8" maxLength="9" />
                       </FormControl>
 
                       <FormControl>
@@ -173,13 +178,15 @@ function TableContent(props) {
                           </HStack>
                         </RadioGroup>
                       </FormControl>
-
-                      <HStack justifyContent="flex-end">
-                        <Button type="submit" colorScheme="success">Αλλαγή</Button>
-                      </HStack>
                     </VStack>
-                  </form>
-                </ModalBody>
+                  </ModalBody>
+
+                  <ModalFooter>
+                    <HStack justifyContent="flex-end">
+                      <Button type="submit" colorScheme="success">Change</Button>
+                    </HStack>
+                  </ModalFooter>
+                </form>
               </ModalContent>
             </Modal>
 
@@ -187,25 +194,30 @@ function TableContent(props) {
               <ModalOverlay />
               <ModalContent>
                 <ModalCloseButton />
-                <ModalHeader>Αλλαγή Κωδικού</ModalHeader>
-                <ModalBody>
-                  <form onSubmit={changePassword}>
+
+                <ModalHeader>Update Password</ModalHeader>
+
+                <form onSubmit={changePassword}>
+                  <ModalBody>
                     <VStack spacing="$4" alignItems="stretch">
                       <FormControl required >
-                        <FormLabel>Καινούριος Κωδικός</FormLabel>
+                        <FormLabel>New Password</FormLabel>
                         <Input type="password" minLength="8" />
                       </FormControl>
                       <FormControl required >
-                        <FormLabel>Επαλήθευση Κωδικού</FormLabel>
+                        <FormLabel>Confirm Password</FormLabel>
                         <Input type="password" minLength="8" />
                       </FormControl>
-
-                      <HStack justifyContent="flex-end">
-                        <Button type="submit" colorScheme="success">Αλλαγή</Button>
-                      </HStack>
                     </VStack>
-                  </form>
-                </ModalBody>
+                  </ModalBody>
+
+                  <ModalFooter>
+                    <HStack justifyContent="flex-end">
+                      <Button type="submit" colorScheme="success">Change</Button>
+                    </HStack>
+                  </ModalFooter>
+                </form>
+
               </ModalContent>
             </Modal>
 

@@ -2,20 +2,23 @@ import { Container, HStack, Input, VStack, Text, Divider, Center, SimpleGrid, Gr
 import { children, mergeProps } from "solid-js";
 
 function DataWrapper(props) {
-  const merged = mergeProps({ user: null, name: null }, props);
+  props = mergeProps({ user: null, name: null, br: false }, props);
 
   return (
     <VStack
       borderWidth="1px"
       borderColor="$neutral6"
-      borderRadius="$lg"
-      m="$2"
+      // borderRadius="$lg"
+      borderBottomRadius={props.br ? "$lg" : "$none"}
       overflow="hidden" >
 
       <Container
         background="$neutral5"
-        p="$1">
-        {merged.name}
+        p="$1"
+      >
+        <Text as="b">
+          {props.name}
+        </Text>
       </Container>
 
       <Divider />

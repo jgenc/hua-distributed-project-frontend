@@ -6,16 +6,16 @@ import DataWrapper from "../../../components/DataWrapper";
 function UserData(props) {
   const merged = mergeProps({ user: null, name: null }, props);
 
-  console.log(merged)
+  console.log(merged);
 
   return (
-    <DataWrapper name={`Στοιχεία ${merged.name}`}>
+    <DataWrapper name={`${merged.name} Info`}>
       <HStack>
-        <DataCell name="ΑΦΜ" value={merged.user.tin} />
-        <DataCell name="Όνομα" value={merged.user.first_name} />
-        <DataCell name="Επίθετο" value={merged.user.last_name} />
-        <DataCell name="Διεύθυνση" value={merged.user.address} />
-        <DataCell name="ΔΟΥ" value={merged.user.doy} />
+        <DataCell name="TIN" value={merged.user.tin} />
+        <DataCell name="Name" value={merged.user.first_name} />
+        <DataCell name="Surname" value={merged.user.last_name} />
+        <DataCell name="Address" value={merged.user.address} />
+        <DataCell name="Greek SEE" value={merged.user.doy} />
       </HStack>
     </DataWrapper>
   );

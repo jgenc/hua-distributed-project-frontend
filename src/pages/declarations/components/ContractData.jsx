@@ -40,27 +40,27 @@ function CreateContract(props) {
 
   return (
     <>
-      <Button onClick={onOpen} disabled={isDeclarationCompleted()} size="xs">Συμπλήρωση Συμβόλαιου</Button>
+      <Button onClick={onOpen} disabled={isDeclarationCompleted()} size="xs">Fill contract</Button>
       <Modal opened={isOpen()} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalHeader>Συμπλήρωση Συμβόλαιου</ModalHeader>
+          <ModalHeader>Contract form</ModalHeader>
           <Divider />
           <ModalBody>
             <FormControl required>
-              <FormLabel>Στοιχεία Συμβόλαιου</FormLabel>
+              <FormLabel>Contract ID</FormLabel>
               <Input
                 onChange={(e) => setContract(e.target.value)}
                 minlength={12}
                 maxLength={25} />
             </FormControl>
             <FormControl required>
-              <FormLabel>Τρόπος Πληρωμής</FormLabel>
+              <FormLabel>Payment Method</FormLabel>
               <SimpleSelect value={select()} onChange={setSelect}>
-                <SimpleOption value="cash">Μετρητά</SimpleOption>
-                <SimpleOption value="check">Επιταγή</SimpleOption>
-                <SimpleOption value="card">Κάρτα</SimpleOption>
+                <SimpleOption value="cash">Cash</SimpleOption>
+                <SimpleOption value="check">Check</SimpleOption>
+                <SimpleOption value="card">Card</SimpleOption>
               </SimpleSelect>
             </FormControl>
           </ModalBody>
@@ -90,19 +90,19 @@ function translatePayment(method) {
 }
 
 function ContractData(props) {
-  const merged = mergeProps({ name: null, contract: null, paymentMethod: null, id: null }, props);
-  const [contract, setContract] = createSignal(merged.contract);
-  const [paymentMethod, setPaymentMethod] = createSignal(merged.paymentMethod);
+  props = mergeProps({ name: null, contract: null, paymentMethod: null, id: null }, props);
+  const [contract, setContract] = createSignal(props.contract);
+  const [paymentMethod, setPaymentMethod] = createSignal(props.paymentMethod);
   const isNotary = decodeToken(accessToken()).notary;
   const isDeclarationCompleted = paymentMethod() && contract();
 
   return (
-    <DataWrapper name={merged.name}>
+    <DataWrapper name={props.name}>
       <HStack>
-        <DataCell name="Αριθμός Συμβόλαιου" value={contract()} />
-        <DataCell name="Τρόπος Πληρωμής" value={translatePayment(paymentMethod())} />
+        <DataCell name="Contract Number" value={contract()} />
+        <DataCell name="Payment method" value={paymentMethod()} />
         <Show when={isNotary}>
-          <DataCell name="Προσθήκη Συμβόλαιου" customRow={<CreateContract id={merged.id} setContract={setContract} setPaymentMethod={setPaymentMethod} isDeclarationCompleted={isDeclarationCompleted} />} />
+          <DataCell name="Upload contract" customRow={<CreateContract id={props.id} setContract={setContract} setPaymentMethod={setPaymentMethod} isDeclarationCompleted={isDeclarationCompleted} />} />
         </Show>
       </HStack>
     </DataWrapper>

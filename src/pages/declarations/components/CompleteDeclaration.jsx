@@ -3,10 +3,10 @@ import DataCell from "../../../components/DataCell";
 import DataWrapper from "../../../components/DataWrapper";
 
 function CompleteDeclaration(props) {
-  const merged = mergeProps({}, props);
+  props = mergeProps({}, props);
   return (
-    <DataWrapper name="Ολοκλήρωση Δήλωσης">
-      <DataCell name="Κίνηση"/>
+    <DataWrapper lastWrapperBottomRadius name="Complete declaration">
+      <DataCell name="Action" />
     </DataWrapper>
   );
 }

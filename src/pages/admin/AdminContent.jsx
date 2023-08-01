@@ -4,7 +4,7 @@ import { Button, Container, HStack, IconButton, Input, VStack } from "@hope-ui/s
 import TableUsers from "./components/TableUsers";
 import NewUserForm from "./components/NewUserForm";
 
-import { AiOutlineSearch } from "solid-icons/ai";
+import { IoSearch } from "solid-icons/io";
 import createNotification from "../../utils/notification";
 import { accessToken } from "../../utils/tokens";
 
@@ -19,7 +19,7 @@ function AdminContent(props) {
     const result = await userService.users();
     setSpinner(false);
 
-    console.log("All users: ", result)
+    console.log("All users: ", result);
 
     // TODO: Find a way to handle the error;
     //  look at the services folder. Should return something weird there and handle it here
@@ -49,7 +49,7 @@ function AdminContent(props) {
         <HStack spacing="$5" height="$10">
           <HStack spacing="$3">
             <Input id="search" onChange={handleSearchUsers} />
-            <IconButton type="submit" variant="ghost" icon={<AiOutlineSearch />} />
+            <IconButton type="submit" variant="ghost" icon={<IoSearch />} />
           </HStack>
 
           <Button onClick={handleShowAllUsers} loading={spinner()}>Show all Users</Button>

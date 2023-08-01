@@ -2,7 +2,6 @@ import { useNavigate } from "@solidjs/router";
 import { createEffect, onMount, Show } from "solid-js";
 import { useUser } from "../../store/user";
 import AdminContent from "./AdminContent";
-import Navbar from "../../components/Navbar";
 
 function AdminPage(props) {
 

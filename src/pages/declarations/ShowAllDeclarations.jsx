@@ -20,39 +20,39 @@ function ShowAllDeclarations() {
     const tin = accountToken().tin;
     let types = [];
     if (tin === purchaserTin)
-      types.push({ type: "Αγορά", color: "info" });
+      types.push({ type: "Purchase", color: "info" });
     if (tin === sellerTin)
-      types.push({ type: "Πώληση", color: "accent" });
+      types.push({ type: "Sell", color: "accent" });
     if (tin === notaryTin)
-      types.push({ type: "Διαχείριση", color: "primary" });
+      types.push({ type: "Manage", color: "primary" });
     return types;
   };
 
   const handleAllDeclarations = async () => {
-    onOpen();
     declarationsService.setToken(accessToken());
     const res = await declarationsService.getDeclarations();
     console.log(res);
     if (res.name === "AxiosError") {
-      createNotification("danger", "Σφάλμα συστήματος, παρακαλώ δοκιμάστε αργότερα");
-      onClose();
+      createNotification("danger", "System error, please try again later");
       return;
     }
     if (res.length === 0) {
-      createNotification("danger", "Δεν βρέθηκαν δηλώσεις");
-      onClose();
+      createNotification("danger", "No declarations found");
       return;
     }
+    onOpen();
     setDeclarations(res);
   };
+
 
   return (
     <>
       <FunctionalityButton
-        text="Όλες οι δηλώσεις"
+        text="See your declarations"
         icon={<VsSearch />}
         onClick={handleAllDeclarations}
       />
+
       <Modal size="xl" opened={isOpen()} onClose={onClose}>
         <ModalOverlay>
           <ModalContent>
@@ -71,28 +71,29 @@ function ShowAllDeclarations() {
                 <Table dense highlightOnHover>
                   <Thead>
                     <Tr>
-                      <Th>Id</Th>
-                      <Th>Αριθμός Ακίνητου</Th>
-                      <Th>Κατάσταση</Th>
-                      <Th>Τύπος</Th>
-                      <Th>Επιλογές</Th>
+                      <Th>ID</Th>
+                      <Th>Property Number</Th>
+                      <Th>State</Th>
+                      <Th>Type</Th>
+                      <Th>Options</Th>
                     </Tr>
                   </Thead>
                   <Tbody>
                     <For each={declarations()}>
                       {(declaration) => <Tr>
+                        {console.log(declaration)}
                         <Td>{declaration.id}</Td>
-                        <Td>{declaration.propertyNumber}</Td>
+                        <Td>{declaration.property_number}</Td>
                         <Td>
                           <Tag
                             colorScheme={declaration.status === "completed" ? "success" : "warning"}
                           >
-                            {declaration.status === "completed" ? "Ολοκληρωμένη" : "Εκκρεμεί"}
+                            {declaration.status === "completed" ? "Completed" : "Pending"}
                           </Tag>
                         </Td>
                         <Td>
                           <VStack spacing="$2">
-                            <For each={typeOfDeclaration(declaration.purchaser_tin, declaration.seller_tin, declaration.notary_tin)}>
+                            <For each={typeOfDeclaration(declaration.purchaser.tin, declaration.seller.tin, declaration.notary.tin)}>
                               {res =>
                                 <Tag colorScheme={res.color}>{res.type}</Tag>
                               }
