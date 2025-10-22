@@ -1,3 +1,12 @@
+# ⚠️ Archived project
+
+> **This repository has been archived and is no longer maintained.**
+>
+> This was a university project from Semester 5 (Distributed Systems course) and is being preserved for reference purposes only. Dependencies are outdated and there is no intention to resolve security vulnerabilities or update packages.
+>
+
+---
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/0dd75e06-5cf4-45e5-aaab-e820cc985c06/deploy-status)](https://app.netlify.com/sites/bejewelled-sherbet-209a57/deploys)
 
 ## Deployment
@@ -11,7 +20,7 @@ Those templates dependencies are maintained via [pnpm](https://pnpm.io) via `pnp
 This is the reason you see a `pnpm-lock.yaml`. That being said, any package manager will work. This file can be safely be removed once you clone a template.
 
 ```bash
-$ npm install # or pnpm install or yarn install
+npm install # or pnpm install or yarn install
 ```
 
 ### Learn more on the [Solid Website](https://solidjs.com) and come chat with us on our [Discord](https://discord.com/invite/solidjs)
